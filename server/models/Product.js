@@ -65,7 +65,7 @@ const productSchema = new mongoose.Schema(
       metaDescription: { type: String, default: '' },
     },
   },
-  { timestamps: true }
+  { timestamps: true, suppressReservedKeysWarning: true }
 );
 
 productSchema.index({ name: 'text', description: 'text', tags: 'text' });

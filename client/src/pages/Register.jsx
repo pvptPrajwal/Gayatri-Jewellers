@@ -64,7 +64,7 @@ const Register = () => {
           </div>
           <div>
             <label className="mb-1 block text-xs text-charcoal-soft">Phone</label>
-            <input type="tel" {...field('phone')} className="input-field" placeholder="9876543210" />
+            <input type="tel" inputMode="numeric" maxLength={10} {...field('phone')} className="input-field" placeholder="9876543210" />
             {errors.phone && <p className="mt-1 text-xs text-maroon">{errors.phone.message}</p>}
           </div>
           <div>

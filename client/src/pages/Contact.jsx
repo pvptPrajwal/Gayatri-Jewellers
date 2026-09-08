@@ -98,7 +98,7 @@ const Contact = () => {
               </div>
               <div>
                 <label className="mb-1 block text-xs text-charcoal-soft">Phone</label>
-                <input {...register('phone')} className="input-field" />
+                <input type="tel" inputMode="numeric" maxLength={10} {...register('phone')} className="input-field" />
                 {errors.phone && <p className="mt-1 text-xs text-maroon">{errors.phone.message}</p>}
               </div>
               <div>
