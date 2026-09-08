@@ -29,10 +29,29 @@ mocked.
 - Customer management (`GET /api/users`, `PUT /api/users/:id/status`) —
   admin only
 
-Orders, Enquiries, Reviews, FAQs and Gold Rates still don't have models/APIs
-yet — that's Phase 3, not built in this pass. The dashboard stats endpoint
-reports `totalOrders: 0`, `totalEnquiries: 0` and `goldRate: null` honestly
-rather than faking numbers, until those exist.
+## Phase 3 additions (Cart / Wishlist / Orders / Enquiries / Gold Rate / Reviews / FAQ)
+
+- **Cart** (`/api/cart`) — now backed by MongoDB per user (was client-only in
+  Phase 2). Supports add/update/remove/clear and a `merge` payload for
+  folding a guest's local cart into the server cart on login.
+- **Wishlist** (`/api/wishlist`) — operates on the existing `User.wishlist`
+  field; same merge-on-login pattern as Cart.
+- **Orders** (`/api/orders`) — places an order from the current cart,
+  decrements stock, tracks a status timeline (`PENDING → CONFIRMED →
+  PROCESSING → SHIPPED → DELIVERED`), customers see only their own orders,
+  admins see all and can update status.
+- **Enquiries** (`/api/enquiries`) — public submission (works for guests and
+  logged-in users via `optionalAuth`), admin-only listing and status updates.
+- **Gold Rates** (`/api/gold-rates`) — each POST creates a new dated entry
+  and becomes the current rate; history is just every prior entry.
+- **Reviews** (`/api/reviews`) — one review per customer per product;
+  creating/editing/deleting a review recalculates the product's `rating`
+  and `reviewCount` automatically.
+- **FAQs** (`/api/faqs`) — standard admin CRUD, grouped by category.
+
+The admin stats endpoint (`/api/admin/stats`) now reports real order counts,
+enquiry counts, and the current gold rate instead of the Phase 1/2
+placeholder zeros.
 
 ### Image uploads require real Cloudinary credentials
 

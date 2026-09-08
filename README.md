@@ -46,27 +46,39 @@ Demo accounts (from the seed script):
   (stock health, products-by-category), full Product CRUD with Cloudinary
   image upload, Category & Collection management, Customer list with
   activate/deactivate — all admin-only and JWT-protected
-- ⏳ **Phase 3** — Cart/Wishlist/Order/Enquiry/GoldRate/Review/FAQ backend +
-  their customer-facing pages (Contact, FAQ, Gold Rate, Offers, Order
-  Details) — skipped ahead to Phase 4 per request, still open
+- ✅ **Phase 3** — Cart/Wishlist now MongoDB-backed for logged-in users
+  (merges guest cart on login); Orders with a full checkout flow and status
+  timeline; Enquiries (Contact form, admin inbox); Gold Rate (storefront
+  page + admin publishing + history); Reviews (on Product Details); FAQ
+  page with admin-managed categories
 - ⏳ **Phase 5** — SEO, full responsiveness/accessibility pass, deployment
 
 ## Admin Panel
 
 Visit `http://localhost:5173/admin/login` and sign in with the seeded admin
-account (`admin@ranajewels.test` / `Admin@12345`, or whatever you set in
-`server/.env`). From there:
+account. From there:
 
-- **Dashboard** — live stats and charts pulled from MongoDB
-- **Products** — add/edit/delete, with drag-in image upload straight to
-  Cloudinary (requires Cloudinary credentials in `server/.env` — see
-  `server/README.md`)
+- **Dashboard** — live stats and charts, including real order/enquiry counts
+  and the current gold rate
+- **Products** — add/edit/delete, with drag-in image upload to Cloudinary
 - **Categories** / **Collections** — add/edit/delete with cover images
+- **Orders** — view all orders, filter by status, update status
+- **Enquiries** — view submitted enquiries, update status (New/In Progress/Resolved)
+- **Gold Rate** — publish a new rate (becomes the storefront's current rate), view history
+- **FAQs** — add/edit/delete, grouped by category
 - **Customers** — search and activate/deactivate accounts
 
-Anything you add here — a new product, a new category — shows up on the
-customer storefront immediately, since both sides hit the same API.
+Anything you add here shows up on the customer storefront immediately,
+since both sides hit the same API.
+
+## What's still not built (Phase 5)
+
+- SEO metadata (dynamic titles, Open Graph, structured data, sitemap)
+- Full accessibility/responsiveness audit pass
+- Deployment configuration and instructions
+- Offers/Banners management (mentioned in the original brief but not
+  prioritized — say the word if you want these added)
+- Online payment (currently Cash on Delivery only)
 
 See each package's own README for full details on what's implemented and
 how it works.
-"# Gayatri-jewellers-" 

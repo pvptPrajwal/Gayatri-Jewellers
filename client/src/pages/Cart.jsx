@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Trash2, ShoppingBag, Minus, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -6,14 +6,25 @@ import { removeFromCart, updateQuantity, selectCartSubtotal } from '../features/
 import { formatINR } from '../utils/formatCurrency';
 import EmptyState from '../components/common/EmptyState';
 import Breadcrumb from '../components/common/Breadcrumb';
+import { useAuth } from '../hooks/useAuth';
 
 const Cart = () => {
   const items = useSelector((state) => state.cart.items);
   const subtotal = useSelector(selectCartSubtotal);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   const estimatedCharges = items.length > 0 ? 0 : 0; // shipping is complimentary per announcement bar
   const total = subtotal + estimatedCharges;
+
+  const handleCheckout = () => {
+    if (isAuthenticated) {
+      navigate('/checkout');
+    } else {
+      navigate('/login', { state: { from: '/checkout' } });
+    }
+  };
 
   if (items.length === 0) {
     return (
@@ -108,7 +119,7 @@ const Cart = () => {
               <span>{formatINR(total)}</span>
             </div>
           </div>
-          <button type="button" className="btn-primary mt-6 w-full">
+          <button type="button" onClick={handleCheckout} className="btn-primary mt-6 w-full">
             Proceed to Checkout
           </button>
           <Link to="/shop" className="mt-3 block text-center text-xs text-charcoal-soft hover:underline">

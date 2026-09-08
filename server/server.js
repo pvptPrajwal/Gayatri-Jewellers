@@ -16,6 +16,13 @@ const collectionRoutes = require('./routes/collectionRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const userRoutes = require('./routes/userRoutes');
+const cartRoutes = require('./routes/cartRoutes');
+const wishlistRoutes = require('./routes/wishlistRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+const enquiryRoutes = require('./routes/enquiryRoutes');
+const goldRateRoutes = require('./routes/goldRateRoutes');
+const reviewRoutes = require('./routes/reviewRoutes');
+const faqRoutes = require('./routes/faqRoutes');
 
 connectDB();
 
@@ -52,6 +59,13 @@ app.use('/api/collections', collectionRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/wishlist', wishlistRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/enquiries', enquiryRoutes);
+app.use('/api/gold-rates', goldRateRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/faqs', faqRoutes);
 
 // 404 + error handling
 app.use(notFound);

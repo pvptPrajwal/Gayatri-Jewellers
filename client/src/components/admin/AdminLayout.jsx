@@ -6,6 +6,10 @@ import {
   FolderTree,
   Layers,
   Users,
+  ShoppingBag,
+  MessageSquare,
+  Coins,
+  HelpCircle,
   LogOut,
   Menu,
   X,
@@ -20,6 +24,10 @@ const navItems = [
   { to: '/admin/products', label: 'Products', icon: Gem },
   { to: '/admin/categories', label: 'Categories', icon: FolderTree },
   { to: '/admin/collections', label: 'Collections', icon: Layers },
+  { to: '/admin/orders', label: 'Orders', icon: ShoppingBag },
+  { to: '/admin/enquiries', label: 'Enquiries', icon: MessageSquare },
+  { to: '/admin/gold-rate', label: 'Gold Rate', icon: Coins },
+  { to: '/admin/faqs', label: 'FAQs', icon: HelpCircle },
   { to: '/admin/customers', label: 'Customers', icon: Users },
 ];
 

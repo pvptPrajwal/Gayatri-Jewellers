@@ -3,14 +3,13 @@ const Product = require('../models/Product');
 const User = require('../models/User');
 const Category = require('../models/Category');
 const Collection = require('../models/Collection');
+const Order = require('../models/Order');
+const Enquiry = require('../models/Enquiry');
+const GoldRate = require('../models/GoldRate');
 
 // @desc    Get dashboard statistics
 // @route   GET /api/admin/stats
 // @access  Private/Admin
-//
-// Orders, Enquiries and Gold Rate stats will be added once those models
-// exist (Phase 3) — until then this reports honestly on what the store
-// actually has: products, customers, catalog structure and stock health.
 const getDashboardStats = asyncHandler(async (req, res) => {
   const [
     totalProducts,
@@ -22,6 +21,14 @@ const getDashboardStats = asyncHandler(async (req, res) => {
     recentProducts,
     stockByStatus,
     productsByCategory,
+    totalOrders,
+    pendingOrders,
+    recentOrders,
+    totalEnquiries,
+    newEnquiries,
+    recentEnquiries,
+    currentGoldRate,
+    revenueAgg,
   ] = await Promise.all([
     Product.countDocuments({ isActive: true }),
     User.countDocuments({ role: 'CUSTOMER' }),
@@ -47,6 +54,17 @@ const getDashboardStats = asyncHandler(async (req, res) => {
       { $project: { name: '$category.name', count: 1, _id: 0 } },
       { $sort: { count: -1 } },
     ]),
+    Order.countDocuments(),
+    Order.countDocuments({ status: { $in: ['PENDING', 'CONFIRMED', 'PROCESSING'] } }),
+    Order.find().populate('user', 'name').sort({ createdAt: -1 }).limit(5).select('orderNumber totalPrice status user createdAt'),
+    Enquiry.countDocuments(),
+    Enquiry.countDocuments({ status: 'NEW' }),
+    Enquiry.find().sort({ createdAt: -1 }).limit(5).select('name subject status createdAt'),
+    GoldRate.findOne({ isCurrent: true }).sort({ date: -1 }),
+    Order.aggregate([
+      { $match: { status: { $ne: 'PENDING' } } },
+      { $group: { _id: null, total: { $sum: '$totalPrice' } } },
+    ]),
   ]);
 
   res.status(200).json({
@@ -57,12 +75,17 @@ const getDashboardStats = asyncHandler(async (req, res) => {
       totalCategories,
       totalCollections,
       outOfStockCount,
-      totalOrders: 0, // Phase 3
-      totalEnquiries: 0, // Phase 3
-      goldRate: null, // Phase 3
+      totalOrders,
+      pendingOrders,
+      totalEnquiries,
+      newEnquiries,
+      goldRate: currentGoldRate,
+      totalRevenue: revenueAgg[0]?.total || 0,
     },
     lowStockProducts,
     recentProducts,
+    recentOrders,
+    recentEnquiries,
     stockByStatus,
     productsByCategory,
   });

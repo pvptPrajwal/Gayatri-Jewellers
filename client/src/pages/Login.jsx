@@ -5,6 +5,8 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { login } from '../features/auth/authSlice';
+import { initCart } from '../features/cart/cartSlice';
+import { initWishlist } from '../features/wishlist/wishlistSlice';
 
 const schema = yup.object({
   identifier: yup.string().required('Email or phone is required'),
@@ -27,6 +29,8 @@ const Login = () => {
     const result = await dispatch(login(data));
     if (login.fulfilled.match(result)) {
       toast.success(`Welcome back, ${result.payload.user.name.split(' ')[0]}!`);
+      dispatch(initCart());
+      dispatch(initWishlist());
       const redirectTo = location.state?.from || (result.payload.user.role === 'ADMIN' ? '/account' : '/account');
       navigate(redirectTo, { replace: true });
     } else {

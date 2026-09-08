@@ -5,6 +5,8 @@ import MainLayout from './components/layout/MainLayout';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import AdminLayout from './components/admin/AdminLayout';
 import { loadCurrentUser } from './features/auth/authSlice';
+import { initCart } from './features/cart/cartSlice';
+import { initWishlist } from './features/wishlist/wishlistSlice';
 
 import Home from './pages/Home';
 import About from './pages/About';
@@ -17,6 +19,12 @@ import Wishlist from './pages/Wishlist';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Account from './pages/Account';
+import Contact from './pages/Contact';
+import FAQ from './pages/FAQ';
+import GoldRate from './pages/GoldRate';
+import Checkout from './pages/Checkout';
+import MyOrders from './pages/MyOrders';
+import OrderDetails from './pages/OrderDetails';
 import ComingSoon from './pages/ComingSoon';
 import NotFound from './pages/NotFound';
 
@@ -27,13 +35,21 @@ import AdminProductForm from './pages/admin/AdminProductForm';
 import AdminCategories from './pages/admin/AdminCategories';
 import AdminCollections from './pages/admin/AdminCollections';
 import AdminCustomers from './pages/admin/AdminCustomers';
+import AdminOrders from './pages/admin/AdminOrders';
+import AdminEnquiries from './pages/admin/AdminEnquiries';
+import AdminGoldRate from './pages/admin/AdminGoldRate';
+import AdminFAQs from './pages/admin/AdminFAQs';
 
 function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
     const token = localStorage.getItem('rj_token');
-    if (token) dispatch(loadCurrentUser());
+    if (token) {
+      dispatch(loadCurrentUser());
+      dispatch(initCart());
+      dispatch(initWishlist());
+    }
   }, [dispatch]);
 
   return (
@@ -46,9 +62,9 @@ function App() {
         <Route path="/product/:slug" element={<ProductDetails />} />
         <Route path="/new-arrivals" element={<NewArrivals />} />
         <Route path="/offers" element={<ComingSoon title="Offers" description="Festive offers and making-charge discounts are being finalized." />} />
-        <Route path="/gold-rate" element={<ComingSoon title="Today's Gold Rate" description="Live gold and silver rates land in the next build phase." />} />
-        <Route path="/contact" element={<ComingSoon title="Contact Us" description="Our contact form and store map are being connected in the next build phase." />} />
-        <Route path="/faq" element={<ComingSoon title="FAQ" description="Frequently asked questions are being compiled." />} />
+        <Route path="/gold-rate" element={<GoldRate />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/faq" element={<FAQ />} />
 
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/cart" element={<Cart />} />
@@ -56,10 +72,34 @@ function App() {
         <Route path="/register" element={<Register />} />
 
         <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute>
+              <Checkout />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/account"
           element={
             <ProtectedRoute>
               <Account />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/account/orders"
+          element={
+            <ProtectedRoute>
+              <MyOrders />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/account/orders/:id"
+          element={
+            <ProtectedRoute>
+              <OrderDetails />
             </ProtectedRoute>
           }
         />
@@ -83,6 +123,10 @@ function App() {
         <Route path="products/:id/edit" element={<AdminProductForm />} />
         <Route path="categories" element={<AdminCategories />} />
         <Route path="collections" element={<AdminCollections />} />
+        <Route path="orders" element={<AdminOrders />} />
+        <Route path="enquiries" element={<AdminEnquiries />} />
+        <Route path="gold-rate" element={<AdminGoldRate />} />
+        <Route path="faqs" element={<AdminFAQs />} />
         <Route path="customers" element={<AdminCustomers />} />
       </Route>
     </Routes>

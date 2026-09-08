@@ -111,4 +111,17 @@ const productTemplates = [
   },
 ];
 
-module.exports = { categories, collections, productTemplates };
+const faqs = [
+  { question: 'How do I know my jewellery is genuine gold?', answer: 'Every piece is BIS hallmarked and comes with a purity certificate.', category: 'Jewellery', displayOrder: 1 },
+  { question: 'What is the difference between 22K and 18K gold?', answer: '22K gold is 91.6% pure and ideal for traditional jewellery; 18K is 75% pure, more durable, and better suited to pieces with stone-setting.', category: 'Jewellery', displayOrder: 2 },
+  { question: 'How can I track my order?', answer: 'Once your order ships, you can track its status from My Account > My Orders.', category: 'Orders', displayOrder: 1 },
+  { question: 'Can I cancel or modify my order?', answer: 'Orders can be modified or cancelled within 24 hours of placement by contacting our support team.', category: 'Orders', displayOrder: 2 },
+  { question: 'Do you offer free shipping?', answer: 'Yes, all orders include complimentary insured shipping across India.', category: 'Shipping', displayOrder: 1 },
+  { question: 'How long does delivery take?', answer: 'Most orders are delivered within 5-7 business days; made-to-order bridal pieces may take 2-3 weeks.', category: 'Shipping', displayOrder: 2 },
+  { question: 'What is your exchange policy?', answer: 'We offer a 15-day easy exchange on all unworn pieces with original packaging and invoice.', category: 'Returns & Exchange', displayOrder: 1 },
+  { question: 'Do you buy back old gold?', answer: 'Yes, we offer gold exchange at the day\'s published rate — visit our store with the piece and a valid ID.', category: 'Returns & Exchange', displayOrder: 2 },
+  { question: 'What payment methods do you accept?', answer: 'We accept cash on delivery and all major UPI, debit and credit cards for online payment.', category: 'Payment', displayOrder: 1 },
+  { question: 'Can I get a custom design made?', answer: 'Yes — bring your design or reference image to our store and our design team will create a custom quote.', category: 'Custom Jewellery', displayOrder: 1 },
+];
+
+module.exports = { categories, collections, productTemplates, faqs };

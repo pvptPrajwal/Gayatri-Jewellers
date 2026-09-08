@@ -6,8 +6,10 @@ const User = require('../models/User');
 const Category = require('../models/Category');
 const Collection = require('../models/Collection');
 const Product = require('../models/Product');
+const FAQ = require('../models/FAQ');
+const GoldRate = require('../models/GoldRate');
 
-const { categories, collections, productTemplates } = require('./data');
+const { categories, collections, productTemplates, faqs } = require('./data');
 
 const PLACEHOLDER_IMG = (seed) => ({
   url: `https://picsum.photos/seed/${seed}/800/800`,
@@ -26,6 +28,8 @@ const run = async () => {
       Category.deleteMany({}),
       Collection.deleteMany({}),
       Product.deleteMany({}),
+      FAQ.deleteMany({}),
+      GoldRate.deleteMany({}),
     ]);
     console.log('All collections cleared.');
     await mongoose.connection.close();
@@ -33,11 +37,18 @@ const run = async () => {
   }
 
   // Clear existing data for a clean, repeatable seed
+  // Note: Cart, Wishlist (on User), Order, Enquiry and Review data is left
+  // untouched by design — re-seeding shouldn't wipe real transactional data
+  // that may have been created against these same product/category IDs in
+  // a previous run. Delete those collections manually if you need a fully
+  // clean slate.
   await Promise.all([
     User.deleteMany({}),
     Category.deleteMany({}),
     Collection.deleteMany({}),
     Product.deleteMany({}),
+    FAQ.deleteMany({}),
+    GoldRate.deleteMany({}),
   ]);
 
   // --- Users ---
@@ -116,6 +127,20 @@ const run = async () => {
     createdProducts.push(product);
   }
   console.log(`Created ${createdProducts.length} products.`);
+
+  // --- FAQs ---
+  await FAQ.insertMany(faqs);
+  console.log(`Created ${faqs.length} FAQs.`);
+
+  // --- Gold Rate (today's starting rate) ---
+  await GoldRate.create({
+    rate24k: 7250,
+    rate22k: 6645,
+    rate18k: 5438,
+    silverRate: 92,
+    isCurrent: true,
+  });
+  console.log('Created initial gold rate entry.');
 
   console.log('\nSeed complete. Demo credentials:');
   console.log(`  Admin    -> email: ${admin.email} / password: ${process.env.SEED_ADMIN_PASSWORD || 'Admin@12345'}`);

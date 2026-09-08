@@ -5,6 +5,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { register as registerUser } from '../features/auth/authSlice';
+import { initCart } from '../features/cart/cartSlice';
+import { initWishlist } from '../features/wishlist/wishlistSlice';
 
 const schema = yup.object({
   name: yup.string().required('Name is required'),
@@ -35,6 +37,8 @@ const Register = () => {
     const result = await dispatch(registerUser(data));
     if (registerUser.fulfilled.match(result)) {
       toast.success('Account created successfully');
+      dispatch(initCart());
+      dispatch(initWishlist());
       navigate('/account', { replace: true });
     } else {
       toast.error(result.payload || 'Registration failed');

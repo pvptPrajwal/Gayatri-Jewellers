@@ -12,6 +12,7 @@ import Rating from '../components/common/Rating';
 import ProductGrid from '../components/common/ProductGrid';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import EmptyState from '../components/common/EmptyState';
+import ProductReviews from '../components/common/ProductReviews';
 
 const ProductDetails = () => {
   const { slug } = useParams();
@@ -205,6 +206,8 @@ const ProductDetails = () => {
           </div>
         </div>
       </div>
+
+      <ProductReviews productId={product._id} />
 
       {related?.length > 0 && (
         <div className="mt-20">

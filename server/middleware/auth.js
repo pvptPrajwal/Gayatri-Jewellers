@@ -34,6 +34,29 @@ const protect = asyncHandler(async (req, res, next) => {
   }
 });
 
+// Attach req.user if a valid token is present, but never block the request
+// if it's absent or invalid — for routes that work for guests and members
+// alike (e.g. submitting an enquiry).
+const optionalAuth = asyncHandler(async (req, res, next) => {
+  let token;
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies && req.cookies.token) {
+    token = req.cookies.token;
+  }
+
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(decoded.id);
+      if (user && user.isActive) req.user = user;
+    } catch {
+      // invalid/expired token on an optional route — proceed as a guest
+    }
+  }
+  next();
+});
+
 // Restrict route to specific roles, e.g. authorize('ADMIN')
 const authorize = (...roles) => {
   return (req, res, next) => {
@@ -45,4 +68,4 @@ const authorize = (...roles) => {
   };
 };
 
-module.exports = { protect, authorize };
+module.exports = { protect, optionalAuth, authorize };

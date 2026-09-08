@@ -42,9 +42,12 @@ const Account = () => {
       </div>
 
       <div className="mt-10 border border-sand-dark p-6">
-        <h2 className="font-display text-xl">Recent Orders</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-xl">Recent Orders</h2>
+          <Link to="/account/orders" className="text-xs text-gold-deep hover:underline">View All</Link>
+        </div>
         <p className="mt-2 text-sm text-charcoal-soft">
-          Order history will appear here once the Orders module is connected in the next build phase.
+          View your order history and track delivery status.
         </p>
       </div>
 
