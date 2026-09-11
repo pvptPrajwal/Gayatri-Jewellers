@@ -4,6 +4,10 @@ import { ShieldCheck, Gem, Hammer, Headphones } from 'lucide-react';
 import { fetchProducts } from '../services/productService';
 import { fetchCategories, fetchCollections } from '../services/catalogService';
 import ProductGrid from '../components/common/ProductGrid';
+import Seo from '../components/common/Seo';
+import PromoBanners from '../components/common/PromoBanners';
+import { fetchSiteSettings } from '../services/siteSettingsService';
+import heroBanner from "./hero-banner.png";
 
 const categoryImageSeed = (name) => `https://picsum.photos/seed/cat-${encodeURIComponent(name)}/500/600`;
 const collectionImageSeed = (name) => `https://picsum.photos/seed/col-${encodeURIComponent(name)}/700/500`;
@@ -14,22 +18,27 @@ const Home = () => {
   const [newArrivals, setNewArrivals] = useState([]);
   const [bestSellers, setBestSellers] = useState([]);
   const [loading, setLoading] = useState(true);
+  // Admin-editable hero image — falls back to the bundled default until
+  // (or unless) an admin uploads one from /admin/site-images.
+  const [heroImage, setHeroImage] = useState(null);
 
   useEffect(() => {
     let mounted = true;
     (async () => {
       try {
-        const [cats, cols, newRes, bestRes] = await Promise.all([
+        const [cats, cols, newRes, bestRes, settings] = await Promise.all([
           fetchCategories(),
           fetchCollections(),
           fetchProducts({ isNewArrival: true, limit: 8, sort: 'newest' }),
           fetchProducts({ isBestSeller: true, limit: 8, sort: 'featured' }),
+          fetchSiteSettings().catch(() => null),
         ]);
         if (!mounted) return;
         setCategories(cats);
         setCollections(cols.filter((c) => c.isFeatured));
         setNewArrivals(newRes.products);
         setBestSellers(bestRes.products);
+        if (settings?.heroImage?.url) setHeroImage(settings.heroImage.url);
       } catch (err) {
         console.error(err);
       } finally {
@@ -43,6 +52,10 @@ const Home = () => {
 
   return (
     <div>
+      <Seo
+        description="Gayatri Jewellers — handcrafted gold, diamond and bridal jewellery in Chhatrapati Sambhajinagar. BIS hallmarked purity, lifetime exchange."
+        path="/"
+      />
       {/* Hero */}
       <section className="container-page grid grid-cols-1 items-center gap-10 py-12 lg:grid-cols-2 lg:py-20">
         <div>
@@ -61,12 +74,14 @@ const Home = () => {
         </div>
         <div className="aspect-[4/5] w-full overflow-hidden bg-sand">
           <img
-            src="https://picsum.photos/seed/gayatri-hero/900/1100"
+            src={heroImage || heroBanner}
             alt="Featured bridal jewellery"
             className="h-full w-full object-cover"
           />
         </div>
       </section>
+
+      <PromoBanners />
 
       {/* Shop by category */}
       <section className="container-page py-14">
@@ -156,7 +171,7 @@ const Home = () => {
 
       {/* Why choose us */}
       <section className="container-page py-16">
-        <p className="section-label text-center">WHY RANA JEWELS</p>
+        <p className="section-label text-center">WHY GAYATRI JEWELLERS </p>
         <h2 className="mt-2 text-center font-display text-3xl">Why Choose Us</h2>
         <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {[

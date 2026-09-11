@@ -72,37 +72,37 @@ const Checkout = () => {
           <h2 className="font-display text-xl">Shipping Address</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-xs text-charcoal-soft">Full Name</label>
-              <input {...register('fullName')} className="input-field" />
+              <label htmlFor="chk-fullName" className="mb-1 block text-xs text-charcoal-soft">Full Name</label>
+              <input id="chk-fullName" {...register('fullName')} className="input-field" />
               {errors.fullName && <p className="mt-1 text-xs text-maroon">{errors.fullName.message}</p>}
             </div>
             <div>
-              <label className="mb-1 block text-xs text-charcoal-soft">Phone</label>
-              <input type="tel" inputMode="numeric" maxLength={10} {...register('phone')} className="input-field" />
+              <label htmlFor="chk-phone" className="mb-1 block text-xs text-charcoal-soft">Phone</label>
+              <input id="chk-phone" type="tel" inputMode="numeric" maxLength={10} {...register('phone')} className="input-field" />
               {errors.phone && <p className="mt-1 text-xs text-maroon">{errors.phone.message}</p>}
             </div>
             <div className="sm:col-span-2">
-              <label className="mb-1 block text-xs text-charcoal-soft">Address Line 1</label>
-              <input {...register('line1')} className="input-field" />
+              <label htmlFor="chk-line1" className="mb-1 block text-xs text-charcoal-soft">Address Line 1</label>
+              <input id="chk-line1" {...register('line1')} className="input-field" />
               {errors.line1 && <p className="mt-1 text-xs text-maroon">{errors.line1.message}</p>}
             </div>
             <div className="sm:col-span-2">
-              <label className="mb-1 block text-xs text-charcoal-soft">Address Line 2 (optional)</label>
-              <input {...register('line2')} className="input-field" />
+              <label htmlFor="chk-line2" className="mb-1 block text-xs text-charcoal-soft">Address Line 2 (optional)</label>
+              <input id="chk-line2" {...register('line2')} className="input-field" />
             </div>
             <div>
-              <label className="mb-1 block text-xs text-charcoal-soft">City</label>
-              <input {...register('city')} className="input-field" />
+              <label htmlFor="chk-city" className="mb-1 block text-xs text-charcoal-soft">City</label>
+              <input id="chk-city" {...register('city')} className="input-field" />
               {errors.city && <p className="mt-1 text-xs text-maroon">{errors.city.message}</p>}
             </div>
             <div>
-              <label className="mb-1 block text-xs text-charcoal-soft">State</label>
-              <input {...register('state')} className="input-field" />
+              <label htmlFor="chk-state" className="mb-1 block text-xs text-charcoal-soft">State</label>
+              <input id="chk-state" {...register('state')} className="input-field" />
               {errors.state && <p className="mt-1 text-xs text-maroon">{errors.state.message}</p>}
             </div>
             <div>
-              <label className="mb-1 block text-xs text-charcoal-soft">Pincode</label>
-              <input {...register('pincode')} className="input-field" />
+              <label htmlFor="chk-pincode" className="mb-1 block text-xs text-charcoal-soft">Pincode</label>
+              <input id="chk-pincode" {...register('pincode')} className="input-field" />
               {errors.pincode && <p className="mt-1 text-xs text-maroon">{errors.pincode.message}</p>}
             </div>
           </div>

@@ -53,13 +53,13 @@ const AdminLogin = () => {
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
           <div>
-            <label className="mb-1 block text-xs text-charcoal-soft">Email or Phone</label>
-            <input type="text" {...register('identifier')} className="input-field" placeholder="admin@gayatrijewellers.test" />
+            <label htmlFor="admin-identifier" className="mb-1 block text-xs text-charcoal-soft">Email or Phone</label>
+            <input id="admin-identifier" type="text" {...register('identifier')} className="input-field" placeholder="admin@gayatrijewellers.test" />
             {errors.identifier && <p className="mt-1 text-xs text-maroon">{errors.identifier.message}</p>}
           </div>
           <div>
-            <label className="mb-1 block text-xs text-charcoal-soft">Password</label>
-            <input type="password" {...register('password')} className="input-field" placeholder="••••••••" />
+            <label htmlFor="admin-password" className="mb-1 block text-xs text-charcoal-soft">Password</label>
+            <input id="admin-password" type="password" {...register('password')} className="input-field" placeholder="••••••••" />
             {errors.password && <p className="mt-1 text-xs text-maroon">{errors.password.message}</p>}
           </div>
           <button type="submit" disabled={status === 'loading'} className="btn-primary w-full">

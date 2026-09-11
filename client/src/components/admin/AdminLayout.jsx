@@ -10,6 +10,9 @@ import {
   MessageSquare,
   Coins,
   HelpCircle,
+  Tag,
+  Image,
+  ImagePlus,
   LogOut,
   Menu,
   X,
@@ -24,6 +27,9 @@ const navItems = [
   { to: '/admin/products', label: 'Products', icon: Gem },
   { to: '/admin/categories', label: 'Categories', icon: FolderTree },
   { to: '/admin/collections', label: 'Collections', icon: Layers },
+  { to: '/admin/offers', label: 'Offers', icon: Tag },
+  { to: '/admin/banners', label: 'Banners', icon: Image },
+  { to: '/admin/site-images', label: 'Site Images', icon: ImagePlus },
   { to: '/admin/orders', label: 'Orders', icon: ShoppingBag },
   { to: '/admin/enquiries', label: 'Enquiries', icon: MessageSquare },
   { to: '/admin/gold-rate', label: 'Gold Rate', icon: Coins },
@@ -45,6 +51,12 @@ const AdminLayout = () => {
 
   return (
     <div className="flex min-h-screen bg-[#F7F5F1] font-sans text-charcoal">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-gold-deep focus:px-4 focus:py-2 focus:text-sm focus:text-ivory"
+      >
+        Skip to main content
+      </a>
       {/* Mobile top bar */}
       <div className="fixed inset-x-0 top-0 z-30 flex h-14 items-center justify-between border-b border-sand-dark bg-charcoal px-4 text-ivory lg:hidden">
         <button type="button" onClick={() => setSidebarOpen(true)} aria-label="Open menu">
@@ -107,7 +119,7 @@ const AdminLayout = () => {
       )}
 
       {/* Content */}
-      <main className="flex-1 pt-14 lg:pt-0">
+      <main id="main-content" className="flex-1 pt-14 lg:pt-0">
         <div className="mx-auto max-w-6xl p-6 lg:p-10">
           <Outlet />
         </div>

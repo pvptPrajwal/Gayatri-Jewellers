@@ -18,3 +18,13 @@ export const fetchCurrentUser = async () => {
 export const logoutUser = async () => {
   await api.post('/auth/logout');
 };
+
+export const requestPasswordReset = async (email) => {
+  const { data } = await api.post('/auth/forgot-password', { email });
+  return data;
+};
+
+export const changePassword = async (currentPassword, newPassword) => {
+  const { data } = await api.put('/auth/change-password', { currentPassword, newPassword });
+  return data;
+};

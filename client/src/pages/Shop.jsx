@@ -6,6 +6,7 @@ import { fetchCategories, fetchCollections } from '../services/catalogService';
 import ProductGrid from '../components/common/ProductGrid';
 import Pagination from '../components/common/Pagination';
 import Breadcrumb from '../components/common/Breadcrumb';
+import Seo from '../components/common/Seo';
 
 const METALS = ['Gold', 'Silver', 'Platinum', 'Diamond', 'Rose Gold', 'White Gold'];
 const GENDERS = ['Men', 'Women', 'Unisex', 'Kids'];
@@ -80,6 +81,11 @@ const Shop = () => {
 
   return (
     <div className="container-page py-10">
+      <Seo
+        title="Shop All Jewellery"
+        description="Browse gold, diamond and silver jewellery from Gayatri Jewellers — filter by category, metal, and price."
+        path="/shop"
+      />
       <Breadcrumb items={[{ label: 'Home', to: '/' }, { label: 'Shop' }]} />
       <div className="mt-4 flex items-end justify-between">
         <h1 className="font-display text-4xl">Shop</h1>

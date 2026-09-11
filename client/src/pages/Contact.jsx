@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 import { submitEnquiry } from '../services/miscService';
 import Breadcrumb from '../components/common/Breadcrumb';
+import Seo from '../components/common/Seo';
 
 const schema = yup.object({
   name: yup.string().required('Name is required'),
@@ -37,6 +38,11 @@ const Contact = () => {
 
   return (
     <div className="container-page py-10">
+      <Seo
+        title="Contact Us"
+        description="Get in touch with Gayatri Jewellers — visit our showroom in Chhatrapati Sambhajinagar or send us a message."
+        path="/contact"
+      />
       <Breadcrumb items={[{ label: 'Home', to: '/' }, { label: 'Contact Us' }]} />
       <h1 className="mt-4 font-display text-4xl">Contact Us</h1>
       <p className="mt-2 max-w-xl text-sm text-charcoal-soft">
@@ -92,28 +98,28 @@ const Contact = () => {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <h2 className="font-display text-2xl">Send a Message</h2>
               <div>
-                <label className="mb-1 block text-xs text-charcoal-soft">Name</label>
-                <input {...register('name')} className="input-field" />
+                <label htmlFor="contact-name" className="mb-1 block text-xs text-charcoal-soft">Name</label>
+                <input id="contact-name" {...register('name')} className="input-field" />
                 {errors.name && <p className="mt-1 text-xs text-maroon">{errors.name.message}</p>}
               </div>
               <div>
-                <label className="mb-1 block text-xs text-charcoal-soft">Phone</label>
-                <input type="tel" inputMode="numeric" maxLength={10} {...register('phone')} className="input-field" />
+                <label htmlFor="contact-phone" className="mb-1 block text-xs text-charcoal-soft">Phone</label>
+                <input id="contact-phone" type="tel" inputMode="numeric" maxLength={10} {...register('phone')} className="input-field" />
                 {errors.phone && <p className="mt-1 text-xs text-maroon">{errors.phone.message}</p>}
               </div>
               <div>
-                <label className="mb-1 block text-xs text-charcoal-soft">Email (optional)</label>
-                <input {...register('email')} className="input-field" />
+                <label htmlFor="contact-email" className="mb-1 block text-xs text-charcoal-soft">Email (optional)</label>
+                <input id="contact-email" {...register('email')} className="input-field" />
                 {errors.email && <p className="mt-1 text-xs text-maroon">{errors.email.message}</p>}
               </div>
               <div>
-                <label className="mb-1 block text-xs text-charcoal-soft">Subject</label>
-                <input {...register('subject')} className="input-field" />
+                <label htmlFor="contact-subject" className="mb-1 block text-xs text-charcoal-soft">Subject</label>
+                <input id="contact-subject" {...register('subject')} className="input-field" />
                 {errors.subject && <p className="mt-1 text-xs text-maroon">{errors.subject.message}</p>}
               </div>
               <div>
-                <label className="mb-1 block text-xs text-charcoal-soft">Message</label>
-                <textarea {...register('message')} rows={5} className="input-field" />
+                <label htmlFor="contact-message" className="mb-1 block text-xs text-charcoal-soft">Message</label>
+                <textarea id="contact-message" {...register('message')} rows={5} className="input-field" />
                 {errors.message && <p className="mt-1 text-xs text-maroon">{errors.message.message}</p>}
               </div>
               <button type="submit" disabled={isSubmitting} className="btn-primary w-full">

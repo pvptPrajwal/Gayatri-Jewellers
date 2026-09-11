@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -303,12 +303,17 @@ const FormSection = ({ title, children }) => (
   </div>
 );
 
-const Field = ({ label, error, full, children }) => (
-  <div className={full ? 'sm:col-span-2' : ''}>
-    <label className="mb-1 block text-xs text-charcoal-soft">{label}</label>
-    {children}
-    {error && <p className="mt-1 text-xs text-maroon">{error.message}</p>}
-  </div>
-);
+const slugifyId = (label) => `product-${label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`;
+
+const Field = ({ label, error, full, children }) => {
+  const id = slugifyId(label);
+  return (
+    <div className={full ? 'sm:col-span-2' : ''}>
+      <label htmlFor={id} className="mb-1 block text-xs text-charcoal-soft">{label}</label>
+      {React.cloneElement(children, { id })}
+      {error && <p className="mt-1 text-xs text-maroon">{error.message}</p>}
+    </div>
+  );
+};
 
 export default AdminProductForm;

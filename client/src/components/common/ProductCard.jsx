@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { toggleWishlist, selectIsWishlisted } from '../../features/wishlist/wishlistSlice';
 import { formatINR } from '../../utils/formatCurrency';
+import { optimizedImage } from '../../utils/cloudinary';
 
 const ProductCard = ({ product }) => {
   const dispatch = useDispatch();
@@ -17,7 +18,7 @@ const ProductCard = ({ product }) => {
         productId: product._id,
         name: product.name,
         slug: product.slug,
-        image: product.mainImage?.url,
+        image: optimizedImage(product.mainImage?.url, 300),
         finalPrice: product.finalPrice,
         metal: product.metal,
         purity: product.purity,
@@ -31,7 +32,7 @@ const ProductCard = ({ product }) => {
       <div className="relative aspect-square overflow-hidden bg-sand">
         {product.mainImage?.url ? (
           <img
-            src={product.mainImage.url}
+            src={optimizedImage(product.mainImage.url, 500)}
             alt={product.mainImage.alt || product.name}
             loading="lazy"
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"

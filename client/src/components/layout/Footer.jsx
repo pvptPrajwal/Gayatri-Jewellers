@@ -1,12 +1,31 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Instagram, MapPin, Phone, Mail } from 'lucide-react';
+import { fetchSiteSettings } from '../../services/siteSettingsService';
 
-const Footer = () => (
+const Footer = () => {
+  // Admin-editable footer logo — falls back to the bundled default until
+  // (or unless) an admin uploads one from /admin/site-images.
+  const [footerLogo, setFooterLogo] = useState(null);
+
+  useEffect(() => {
+    let mounted = true;
+    fetchSiteSettings()
+      .then((settings) => {
+        if (mounted && settings?.footerLogo?.url) setFooterLogo(settings.footerLogo.url);
+      })
+      .catch(() => {});
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  return (
   <footer className="mt-24 border-t border-sand-dark/70 bg-charcoal text-ivory">
     <div className="container-page grid grid-cols-1 gap-10 py-16 sm:grid-cols-2 lg:grid-cols-4">
       <div>
         <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="Gayatri Jewellers" className="h-10 w-10" />
+          <img src={footerLogo || '/logo.png'} alt="Gayatri Jewellers" className="h-10 w-10" />
           <h3 className="font-display text-2xl">
             Gayatri <span className="text-gold-light">Jewellers</span>
           </h3>
@@ -78,6 +97,7 @@ const Footer = () => (
       </p>
     </div>
   </footer>
-);
+  );
+};
 
 export default Footer;

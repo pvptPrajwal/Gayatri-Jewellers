@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import MainLayout from './components/layout/MainLayout';
 import ProtectedRoute from './components/common/ProtectedRoute';
-import AdminLayout from './components/admin/AdminLayout';
+import LoadingSpinner from './components/common/LoadingSpinner';
 import { loadCurrentUser } from './features/auth/authSlice';
 import { initCart } from './features/cart/cartSlice';
 import { initWishlist } from './features/wishlist/wishlistSlice';
@@ -18,6 +18,7 @@ import Cart from './pages/Cart';
 import Wishlist from './pages/Wishlist';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
 import Account from './pages/Account';
 import Contact from './pages/Contact';
 import FAQ from './pages/FAQ';
@@ -25,20 +26,26 @@ import GoldRate from './pages/GoldRate';
 import Checkout from './pages/Checkout';
 import MyOrders from './pages/MyOrders';
 import OrderDetails from './pages/OrderDetails';
-import ComingSoon from './pages/ComingSoon';
+import Offers from './pages/Offers';
 import NotFound from './pages/NotFound';
 
-import AdminLogin from './pages/admin/AdminLogin';
-import Dashboard from './pages/admin/Dashboard';
-import AdminProductList from './pages/admin/AdminProductList';
-import AdminProductForm from './pages/admin/AdminProductForm';
-import AdminCategories from './pages/admin/AdminCategories';
-import AdminCollections from './pages/admin/AdminCollections';
-import AdminCustomers from './pages/admin/AdminCustomers';
-import AdminOrders from './pages/admin/AdminOrders';
-import AdminEnquiries from './pages/admin/AdminEnquiries';
-import AdminGoldRate from './pages/admin/AdminGoldRate';
-import AdminFAQs from './pages/admin/AdminFAQs';
+// Admin pages are lazy-loaded: this code is only downloaded when someone
+// actually visits /admin, so regular customers never pay for its weight.
+const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
+const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'));
+const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
+const AdminProductList = lazy(() => import('./pages/admin/AdminProductList'));
+const AdminProductForm = lazy(() => import('./pages/admin/AdminProductForm'));
+const AdminCategories = lazy(() => import('./pages/admin/AdminCategories'));
+const AdminCollections = lazy(() => import('./pages/admin/AdminCollections'));
+const AdminCustomers = lazy(() => import('./pages/admin/AdminCustomers'));
+const AdminOrders = lazy(() => import('./pages/admin/AdminOrders'));
+const AdminEnquiries = lazy(() => import('./pages/admin/AdminEnquiries'));
+const AdminGoldRate = lazy(() => import('./pages/admin/AdminGoldRate'));
+const AdminFAQs = lazy(() => import('./pages/admin/AdminFAQs'));
+const AdminOffers = lazy(() => import('./pages/admin/AdminOffers'));
+const AdminBanners = lazy(() => import('./pages/admin/AdminBanners'));
+const AdminSiteImages = lazy(() => import('./pages/admin/AdminSiteImages'));
 
 function App() {
   const dispatch = useDispatch();
@@ -61,7 +68,7 @@ function App() {
         <Route path="/shop" element={<Shop />} />
         <Route path="/product/:slug" element={<ProductDetails />} />
         <Route path="/new-arrivals" element={<NewArrivals />} />
-        <Route path="/offers" element={<ComingSoon title="Offers" description="Festive offers and making-charge discounts are being finalized." />} />
+        <Route path="/offers" element={<Offers />} />
         <Route path="/gold-rate" element={<GoldRate />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/faq" element={<FAQ />} />
@@ -70,6 +77,7 @@ function App() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
         <Route
           path="/checkout"
@@ -107,27 +115,137 @@ function App() {
         <Route path="*" element={<NotFound />} />
       </Route>
 
-      {/* Admin */}
-      <Route path="/admin/login" element={<AdminLogin />} />
+      {/* Admin — wrapped in Suspense since these pages load on demand */}
+      <Route
+        path="/admin/login"
+        element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <AdminLogin />
+          </Suspense>
+        }
+      />
       <Route
         path="/admin"
         element={
           <ProtectedRoute adminOnly>
-            <AdminLayout />
+            <Suspense fallback={<LoadingSpinner />}>
+              <AdminLayout />
+            </Suspense>
           </ProtectedRoute>
         }
       >
-        <Route index element={<Dashboard />} />
-        <Route path="products" element={<AdminProductList />} />
-        <Route path="products/add" element={<AdminProductForm />} />
-        <Route path="products/:id/edit" element={<AdminProductForm />} />
-        <Route path="categories" element={<AdminCategories />} />
-        <Route path="collections" element={<AdminCollections />} />
-        <Route path="orders" element={<AdminOrders />} />
-        <Route path="enquiries" element={<AdminEnquiries />} />
-        <Route path="gold-rate" element={<AdminGoldRate />} />
-        <Route path="faqs" element={<AdminFAQs />} />
-        <Route path="customers" element={<AdminCustomers />} />
+        <Route
+          index
+          element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <Dashboard />
+            </Suspense>
+          }
+        />
+        <Route
+          path="products"
+          element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <AdminProductList />
+            </Suspense>
+          }
+        />
+        <Route
+          path="products/add"
+          element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <AdminProductForm />
+            </Suspense>
+          }
+        />
+        <Route
+          path="products/:id/edit"
+          element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <AdminProductForm />
+            </Suspense>
+          }
+        />
+        <Route
+          path="categories"
+          element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <AdminCategories />
+            </Suspense>
+          }
+        />
+        <Route
+          path="collections"
+          element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <AdminCollections />
+            </Suspense>
+          }
+        />
+        <Route
+          path="orders"
+          element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <AdminOrders />
+            </Suspense>
+          }
+        />
+        <Route
+          path="enquiries"
+          element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <AdminEnquiries />
+            </Suspense>
+          }
+        />
+        <Route
+          path="gold-rate"
+          element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <AdminGoldRate />
+            </Suspense>
+          }
+        />
+        <Route
+          path="faqs"
+          element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <AdminFAQs />
+            </Suspense>
+          }
+        />
+        <Route
+          path="offers"
+          element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <AdminOffers />
+            </Suspense>
+          }
+        />
+        <Route
+          path="banners"
+          element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <AdminBanners />
+            </Suspense>
+          }
+        />
+        <Route
+          path="customers"
+          element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <AdminCustomers />
+            </Suspense>
+          }
+        />
+        <Route
+          path="site-images"
+          element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <AdminSiteImages />
+            </Suspense>
+          }
+        />
       </Route>
     </Routes>
   );

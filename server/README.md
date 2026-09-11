@@ -187,11 +187,21 @@ curl -X POST http://localhost:5000/api/products \
   the `Product`/`Category`/`Collection` schemas already have the
   `{ url, publicId }` shape ready for it.
 
-## Next phases
+## Offers & Banners API
 
-- Phase 2: React storefront (Home, Shop, Product Details, Cart, Wishlist)
-  wired to this API
-- Phase 3: Cart/Wishlist/Order/Enquiry/GoldRate/Review/FAQ models + APIs and
-  their pages
-- Phase 4: Admin dashboard (stats, charts, full CRUD UI, Cloudinary uploads)
-- Phase 5: SEO, responsiveness pass, deployment docs
+- **Offers** (`/api/offers`) — `GET` returns active, unexpired offers by
+  default (`?all=true` for admin to see everything including expired/
+  inactive). Each offer has `discountType` (`PERCENTAGE`, `FLAT`, or
+  `MAKING_CHARGE_OFF`), `discountValue`, optional `code`, `validTill`, and
+  `termsAndConditions`. Admin-only `POST`/`PUT`/`DELETE`.
+- **Banners** (`/api/banners`) — simple ordered list (`displayOrder`) of
+  image + title/subtitle/link/buttonText, rendered as a rotating strip on
+  the storefront Home page. Admin-only `POST`/`PUT`/`DELETE`.
+
+## Current status (all phases)
+
+This backend now covers: auth, Products/Categories/Collections, Cart,
+Wishlist, Orders, Enquiries, Gold Rates, Reviews, FAQs, Offers, Banners,
+image uploads (Cloudinary), admin dashboard stats, user management, a
+dynamically generated sitemap, and rate limiting on public form endpoints.
+See the root `README.md` for the full phase-by-phase build status.

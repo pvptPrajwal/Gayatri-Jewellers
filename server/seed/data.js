@@ -124,4 +124,57 @@ const faqs = [
   { question: 'Can I get a custom design made?', answer: 'Yes — bring your design or reference image to our store and our design team will create a custom quote.', category: 'Custom Jewellery', displayOrder: 1 },
 ];
 
-module.exports = { categories, collections, productTemplates, faqs };
+const now = new Date();
+const daysFromNow = (n) => new Date(now.getTime() + n * 24 * 60 * 60 * 1000);
+
+const offers = [
+  {
+    title: 'Festive Gold Rush',
+    description: 'Celebrate the season with 10% off making charges on all gold jewellery.',
+    discountType: 'MAKING_CHARGE_OFF',
+    discountValue: 10,
+    validTill: daysFromNow(30),
+    termsAndConditions: 'Valid on gold jewellery only. Cannot be combined with other offers. Valid while stocks last.',
+    displayOrder: 1,
+  },
+  {
+    title: 'Bridal Bonanza',
+    description: 'Flat 5% off on the Bridal Collection — because your big day deserves it.',
+    discountType: 'PERCENTAGE',
+    discountValue: 5,
+    code: 'BRIDAL5',
+    validTill: daysFromNow(45),
+    termsAndConditions: 'Applicable only on Bridal Collection pieces. One code per order.',
+    displayOrder: 2,
+  },
+  {
+    title: 'Silver Saver',
+    description: 'Flat ₹500 off on silver jewellery purchases above ₹5,000.',
+    discountType: 'FLAT',
+    discountValue: 500,
+    validTill: daysFromNow(20),
+    termsAndConditions: 'Minimum purchase of ₹5,000 on Silver Collection required.',
+    displayOrder: 3,
+  },
+];
+
+const banners = [
+  {
+    title: 'Festive Collection is Here',
+    subtitle: 'Handcrafted gold and diamond pieces for the season of celebration',
+    image: { url: 'https://picsum.photos/seed/gayatri-banner-1/1600/600' },
+    link: '/shop?isFeatured=true',
+    buttonText: 'Shop Now',
+    displayOrder: 1,
+  },
+  {
+    title: 'Bridal Edit',
+    subtitle: 'Heirloom pieces for your big day',
+    image: { url: 'https://picsum.photos/seed/gayatri-banner-2/1600/600' },
+    link: '/collections',
+    buttonText: 'Explore Bridal',
+    displayOrder: 2,
+  },
+];
+
+module.exports = { categories, collections, productTemplates, faqs, offers, banners };

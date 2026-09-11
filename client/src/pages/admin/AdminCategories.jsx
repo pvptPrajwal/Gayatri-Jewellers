@@ -101,10 +101,10 @@ const AdminCategories = () => {
                   <p className="truncate font-medium">{cat.name}</p>
                   <p className="text-xs text-charcoal-soft">{cat.isActive ? 'Active' : 'Inactive'}</p>
                 </div>
-                <button type="button" onClick={() => openEdit(cat)} className="text-charcoal-soft hover:text-gold-deep">
+                <button type="button" onClick={() => openEdit(cat)} aria-label={`Edit ${cat.name}`} className="text-charcoal-soft hover:text-gold-deep">
                   <Pencil size={16} />
                 </button>
-                <button type="button" onClick={() => setToDelete(cat)} className="text-charcoal-soft hover:text-maroon">
+                <button type="button" onClick={() => setToDelete(cat)} aria-label={`Delete ${cat.name}`} className="text-charcoal-soft hover:text-maroon">
                   <Trash2 size={16} />
                 </button>
               </div>
@@ -124,16 +124,18 @@ const AdminCategories = () => {
             </div>
             <div className="mt-4 space-y-4">
               <div>
-                <label className="mb-1 block text-xs text-charcoal-soft">Name</label>
+                <label htmlFor="category-name" className="mb-1 block text-xs text-charcoal-soft">Name</label>
                 <input
+                  id="category-name"
                   value={form.name}
                   onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                   className="input-field"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-xs text-charcoal-soft">Description</label>
+                <label htmlFor="category-description" className="mb-1 block text-xs text-charcoal-soft">Description</label>
                 <textarea
+                  id="category-description"
                   value={form.description}
                   onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                   rows={3}

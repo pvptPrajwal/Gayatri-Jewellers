@@ -46,18 +46,18 @@ const Login = () => {
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
           <div>
-            <label className="mb-1 block text-xs text-charcoal-soft">Email or Phone</label>
-            <input type="text" {...register('identifier')} className="input-field" placeholder="you@example.com" />
+            <label htmlFor="login-identifier" className="mb-1 block text-xs text-charcoal-soft">Email or Phone</label>
+            <input id="login-identifier" type="text" {...register('identifier')} className="input-field" placeholder="you@example.com" />
             {errors.identifier && <p className="mt-1 text-xs text-maroon">{errors.identifier.message}</p>}
           </div>
           <div>
             <div className="flex items-center justify-between">
-              <label className="mb-1 block text-xs text-charcoal-soft">Password</label>
+              <label htmlFor="login-password" className="mb-1 block text-xs text-charcoal-soft">Password</label>
               <Link to="/forgot-password" className="text-xs text-gold-deep hover:underline">
                 Forgot Password?
               </Link>
             </div>
-            <input type="password" {...register('password')} className="input-field" placeholder="••••••••" />
+            <input id="login-password" type="password" {...register('password')} className="input-field" placeholder="••••••••" />
             {errors.password && <p className="mt-1 text-xs text-maroon">{errors.password.message}</p>}
           </div>
           <label className="flex items-center gap-2 text-xs text-charcoal-soft">

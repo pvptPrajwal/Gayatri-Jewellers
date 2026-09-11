@@ -1,9 +1,15 @@
 import { Link } from 'react-router-dom';
 import { Gem, ShieldCheck, Users, Award } from 'lucide-react';
 import Breadcrumb from '../components/common/Breadcrumb';
+import Seo from '../components/common/Seo';
 
 const About = () => (
   <div>
+    <Seo
+      title="About Us"
+      description="The story behind Gayatri Jewellers — craftsmanship, quality and trust in every piece."
+      path="/about"
+    />
     <div className="relative h-[45vh] min-h-[320px] w-full overflow-hidden">
       <img
         src="https://picsum.photos/seed/gayatri-about-hero/1600/800"

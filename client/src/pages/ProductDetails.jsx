@@ -13,6 +13,8 @@ import ProductGrid from '../components/common/ProductGrid';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import EmptyState from '../components/common/EmptyState';
 import ProductReviews from '../components/common/ProductReviews';
+import Seo from '../components/common/Seo';
+import { optimizedImage } from '../utils/cloudinary';
 
 const ProductDetails = () => {
   const { slug } = useParams();
@@ -97,8 +99,42 @@ const ProductDetails = () => {
     toast.success(isWishlisted ? 'Removed from wishlist' : 'Added to wishlist');
   };
 
+  const productJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    image: [product.mainImage?.url, ...(product.images || []).map((i) => i.url)].filter(Boolean),
+    description: product.shortDescription || product.description,
+    sku: product.sku,
+    brand: { '@type': 'Brand', name: 'Gayatri Jewellers' },
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: 'INR',
+      price: product.finalPrice,
+      availability:
+        product.stockStatus === 'OUT_OF_STOCK'
+          ? 'https://schema.org/OutOfStock'
+          : 'https://schema.org/InStock',
+      url: `${import.meta.env.VITE_SITE_URL || 'http://localhost:5173'}/product/${product.slug}`,
+    },
+    ...(product.reviewCount > 0 && {
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: product.rating,
+        reviewCount: product.reviewCount,
+      },
+    }),
+  };
+
   return (
     <div className="container-page py-10">
+      <Seo
+        title={product.name}
+        description={product.shortDescription || product.description?.slice(0, 155)}
+        path={`/product/${product.slug}`}
+        image={product.mainImage?.url}
+        jsonLd={productJsonLd}
+      />
       <Breadcrumb
         items={[
           { label: 'Home', to: '/' },
@@ -113,7 +149,7 @@ const ProductDetails = () => {
         <div>
           <div className="aspect-square w-full overflow-hidden bg-sand">
             <img
-              src={gallery[activeImage]?.url}
+              src={optimizedImage(gallery[activeImage]?.url, 800)}
               alt={gallery[activeImage]?.alt || product.name}
               className="h-full w-full object-cover"
             />
@@ -128,7 +164,7 @@ const ProductDetails = () => {
                   activeImage === idx ? 'ring-2 ring-gold' : ''
                 }`}
               >
-                <img src={img.url} alt={img.alt || product.name} className="h-full w-full object-cover" />
+                <img src={optimizedImage(img.url, 150)} alt={img.alt || product.name} className="h-full w-full object-cover" />
               </button>
             ))}
           </div>

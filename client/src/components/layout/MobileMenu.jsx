@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { X } from 'lucide-react';
 
@@ -14,10 +15,19 @@ const links = [
 ];
 
 const MobileMenu = ({ open, onClose }) => {
+  useEffect(() => {
+    if (!open) return undefined;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [open, onClose]);
+
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 lg:hidden">
+    <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Site menu">
       <div className="absolute inset-0 bg-charcoal/50" onClick={onClose} />
       <div className="absolute right-0 top-0 h-full w-80 max-w-[85vw] bg-ivory p-6 shadow-xl">
         <div className="flex items-center justify-between">

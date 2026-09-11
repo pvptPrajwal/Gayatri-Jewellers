@@ -3,6 +3,7 @@ import { fetchProducts } from '../services/productService';
 import ProductGrid from '../components/common/ProductGrid';
 import Pagination from '../components/common/Pagination';
 import Breadcrumb from '../components/common/Breadcrumb';
+import Seo from '../components/common/Seo';
 
 const NewArrivals = () => {
   const [result, setResult] = useState({ products: [], total: 0, page: 1, pages: 1 });
@@ -23,6 +24,11 @@ const NewArrivals = () => {
 
   return (
     <div className="container-page py-10">
+      <Seo
+        title="New Arrivals"
+        description="The latest gold and diamond jewellery pieces from Gayatri Jewellers."
+        path="/new-arrivals"
+      />
       <Breadcrumb items={[{ label: 'Home', to: '/' }, { label: 'New Arrivals' }]} />
       <h1 className="mt-4 font-display text-4xl">New Arrivals</h1>
       <p className="mt-2 max-w-xl text-sm text-charcoal-soft">

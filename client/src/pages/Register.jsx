@@ -53,28 +53,28 @@ const Register = () => {
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
           <div>
-            <label className="mb-1 block text-xs text-charcoal-soft">Full Name</label>
-            <input type="text" {...field('name')} className="input-field" placeholder="Priya Sharma" />
+            <label htmlFor="reg-name" className="mb-1 block text-xs text-charcoal-soft">Full Name</label>
+            <input id="reg-name" type="text" {...field('name')} className="input-field" placeholder="Priya Sharma" />
             {errors.name && <p className="mt-1 text-xs text-maroon">{errors.name.message}</p>}
           </div>
           <div>
-            <label className="mb-1 block text-xs text-charcoal-soft">Email</label>
-            <input type="email" {...field('email')} className="input-field" placeholder="you@example.com" />
+            <label htmlFor="reg-email" className="mb-1 block text-xs text-charcoal-soft">Email</label>
+            <input id="reg-email" type="email" {...field('email')} className="input-field" placeholder="you@example.com" />
             {errors.email && <p className="mt-1 text-xs text-maroon">{errors.email.message}</p>}
           </div>
           <div>
-            <label className="mb-1 block text-xs text-charcoal-soft">Phone</label>
-            <input type="tel" inputMode="numeric" maxLength={10} {...field('phone')} className="input-field" placeholder="9876543210" />
+            <label htmlFor="reg-phone" className="mb-1 block text-xs text-charcoal-soft">Phone</label>
+            <input id="reg-phone" type="tel" inputMode="numeric" maxLength={10} {...field('phone')} className="input-field" placeholder="9876543210" />
             {errors.phone && <p className="mt-1 text-xs text-maroon">{errors.phone.message}</p>}
           </div>
           <div>
-            <label className="mb-1 block text-xs text-charcoal-soft">Password</label>
-            <input type="password" {...field('password')} className="input-field" placeholder="••••••••" />
+            <label htmlFor="reg-password" className="mb-1 block text-xs text-charcoal-soft">Password</label>
+            <input id="reg-password" type="password" {...field('password')} className="input-field" placeholder="••••••••" />
             {errors.password && <p className="mt-1 text-xs text-maroon">{errors.password.message}</p>}
           </div>
           <div>
-            <label className="mb-1 block text-xs text-charcoal-soft">Confirm Password</label>
-            <input type="password" {...field('confirmPassword')} className="input-field" placeholder="••••••••" />
+            <label htmlFor="reg-confirm-password" className="mb-1 block text-xs text-charcoal-soft">Confirm Password</label>
+            <input id="reg-confirm-password" type="password" {...field('confirmPassword')} className="input-field" placeholder="••••••••" />
             {errors.confirmPassword && <p className="mt-1 text-xs text-maroon">{errors.confirmPassword.message}</p>}
           </div>
           <button type="submit" disabled={status === 'loading'} className="btn-primary w-full">

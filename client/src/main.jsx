@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from 'react-hot-toast';
 import App from './App.jsx';
 import { store } from './app/store.js';
@@ -10,20 +11,22 @@ import './index.css';
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Provider store={store}>
-      <BrowserRouter>
-        <App />
-        <Toaster
-          position="top-center"
-          toastOptions={{
-            style: {
-              background: '#2B2420',
-              color: '#FBF7EF',
-              fontSize: '14px',
-              borderRadius: '2px',
-            },
-          }}
-        />
-      </BrowserRouter>
+      <HelmetProvider>
+        <BrowserRouter>
+          <App />
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              style: {
+                background: '#2B2420',
+                color: '#FBF7EF',
+                fontSize: '14px',
+                borderRadius: '2px',
+              },
+            }}
+          />
+        </BrowserRouter>
+      </HelmetProvider>
     </Provider>
   </React.StrictMode>
 );

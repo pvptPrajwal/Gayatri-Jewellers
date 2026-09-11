@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { logout } from '../features/auth/authSlice';
 import { useAuth } from '../hooks/useAuth';
 import Breadcrumb from '../components/common/Breadcrumb';
+import ChangePasswordForm from '../components/common/ChangePasswordForm';
 
 const Account = () => {
   const { user } = useAuth();
@@ -51,9 +52,12 @@ const Account = () => {
         </p>
       </div>
 
-      <button type="button" onClick={handleLogout} className="btn-outline mt-8">
-        <LogOut size={16} /> Logout
-      </button>
+      <div className="mt-8 flex flex-wrap gap-3">
+        <ChangePasswordForm />
+        <button type="button" onClick={handleLogout} className="btn-outline">
+          <LogOut size={16} /> Logout
+        </button>
+      </div>
     </div>
   );
 };

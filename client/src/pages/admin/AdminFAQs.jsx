@@ -93,10 +93,10 @@ const AdminFAQs = () => {
                 <p className="text-xs text-charcoal-soft">{faq.category} · {faq.isActive ? 'Active' : 'Inactive'}</p>
               </div>
               <div className="flex shrink-0 gap-3">
-                <button type="button" onClick={() => openEdit(faq)} className="text-charcoal-soft hover:text-gold-deep">
+                <button type="button" onClick={() => openEdit(faq)} aria-label={`Edit ${faq.question}`} className="text-charcoal-soft hover:text-gold-deep">
                   <Pencil size={16} />
                 </button>
-                <button type="button" onClick={() => setToDelete(faq)} className="text-charcoal-soft hover:text-maroon">
+                <button type="button" onClick={() => setToDelete(faq)} aria-label={`Delete ${faq.question}`} className="text-charcoal-soft hover:text-maroon">
                   <Trash2 size={16} />
                 </button>
               </div>
@@ -114,16 +114,16 @@ const AdminFAQs = () => {
             </div>
             <div className="mt-4 space-y-4">
               <div>
-                <label className="mb-1 block text-xs text-charcoal-soft">Question</label>
-                <input value={form.question} onChange={(e) => setForm((f) => ({ ...f, question: e.target.value }))} className="input-field" />
+                <label htmlFor="faq-question" className="mb-1 block text-xs text-charcoal-soft">Question</label>
+                <input id="faq-question" value={form.question} onChange={(e) => setForm((f) => ({ ...f, question: e.target.value }))} className="input-field" />
               </div>
               <div>
-                <label className="mb-1 block text-xs text-charcoal-soft">Answer</label>
-                <textarea value={form.answer} onChange={(e) => setForm((f) => ({ ...f, answer: e.target.value }))} rows={3} className="input-field" />
+                <label htmlFor="faq-answer" className="mb-1 block text-xs text-charcoal-soft">Answer</label>
+                <textarea id="faq-answer" value={form.answer} onChange={(e) => setForm((f) => ({ ...f, answer: e.target.value }))} rows={3} className="input-field" />
               </div>
               <div>
-                <label className="mb-1 block text-xs text-charcoal-soft">Category</label>
-                <select value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))} className="input-field">
+                <label htmlFor="faq-category" className="mb-1 block text-xs text-charcoal-soft">Category</label>
+                <select id="faq-category" value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))} className="input-field">
                   {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>

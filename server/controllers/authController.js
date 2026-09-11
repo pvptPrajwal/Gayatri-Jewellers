@@ -134,4 +134,33 @@ const resetPassword = asyncHandler(async (req, res) => {
   sendTokenResponse(user, 200, res);
 });
 
-module.exports = { register, login, getMe, logout, forgotPassword, resetPassword };
+// @desc    Change password while logged in (the real fix for rotating a
+//          seeded/demo password — forgot-password requires an email
+//          provider that isn't configured; this doesn't).
+// @route   PUT /api/auth/change-password
+// @access  Private
+const changePassword = asyncHandler(async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    res.status(400);
+    throw new Error('Current password and new password are required');
+  }
+  if (newPassword.length < 8) {
+    res.status(400);
+    throw new Error('New password must be at least 8 characters');
+  }
+
+  const user = await User.findById(req.user._id).select('+password');
+  if (!(await user.comparePassword(currentPassword))) {
+    res.status(401);
+    throw new Error('Current password is incorrect');
+  }
+
+  user.password = newPassword;
+  await user.save();
+
+  res.status(200).json({ success: true, message: 'Password updated successfully' });
+});
+
+module.exports = { register, login, getMe, logout, forgotPassword, resetPassword, changePassword };

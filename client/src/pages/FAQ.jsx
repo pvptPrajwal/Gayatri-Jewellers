@@ -4,6 +4,7 @@ import { fetchFAQs } from '../services/miscService';
 import Breadcrumb from '../components/common/Breadcrumb';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import EmptyState from '../components/common/EmptyState';
+import Seo from '../components/common/Seo';
 
 const FAQ = () => {
   const [faqs, setFaqs] = useState([]);
@@ -23,6 +24,11 @@ const FAQ = () => {
 
   return (
     <div className="container-page py-10">
+      <Seo
+        title="FAQ"
+        description="Answers to common questions about jewellery purity, orders, shipping, and returns at Gayatri Jewellers."
+        path="/faq"
+      />
       <Breadcrumb items={[{ label: 'Home', to: '/' }, { label: 'FAQ' }]} />
       <h1 className="mt-4 font-display text-4xl">Frequently Asked Questions</h1>
       <p className="mt-2 max-w-xl text-sm text-charcoal-soft">

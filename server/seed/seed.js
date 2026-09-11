@@ -8,8 +8,10 @@ const Collection = require('../models/Collection');
 const Product = require('../models/Product');
 const FAQ = require('../models/FAQ');
 const GoldRate = require('../models/GoldRate');
+const Offer = require('../models/Offer');
+const Banner = require('../models/Banner');
 
-const { categories, collections, productTemplates, faqs } = require('./data');
+const { categories, collections, productTemplates, faqs, offers, banners } = require('./data');
 
 const PLACEHOLDER_IMG = (seed) => ({
   url: `https://picsum.photos/seed/${seed}/800/800`,
@@ -18,6 +20,21 @@ const PLACEHOLDER_IMG = (seed) => ({
 });
 
 const run = async () => {
+  // Safety guard: this script wipes Users/Categories/Collections/Products/
+  // FAQs/GoldRates/Offers/Banners unconditionally. That's fine against a
+  // fresh dev database, but catastrophic if ever run against a live store
+  // by habit or muscle memory. Require an explicit opt-in once NODE_ENV is
+  // production.
+  if (process.env.NODE_ENV === 'production' && process.env.ALLOW_PROD_SEED !== 'true') {
+    console.error(
+      '\nRefusing to run: NODE_ENV=production and ALLOW_PROD_SEED is not set to "true".\n' +
+        'This script deletes existing Users, Categories, Collections, Products, FAQs,\n' +
+        'Gold Rates, Offers and Banners before recreating them. If you really mean to\n' +
+        'reset a production database, re-run with ALLOW_PROD_SEED=true set explicitly.\n'
+    );
+    process.exit(1);
+  }
+
   await connectDB();
 
   const destroy = process.argv.includes('-d');
@@ -30,6 +47,8 @@ const run = async () => {
       Product.deleteMany({}),
       FAQ.deleteMany({}),
       GoldRate.deleteMany({}),
+      Offer.deleteMany({}),
+      Banner.deleteMany({}),
     ]);
     console.log('All collections cleared.');
     await mongoose.connection.close();
@@ -49,6 +68,8 @@ const run = async () => {
     Product.deleteMany({}),
     FAQ.deleteMany({}),
     GoldRate.deleteMany({}),
+    Offer.deleteMany({}),
+    Banner.deleteMany({}),
   ]);
 
   // --- Users ---
@@ -141,6 +162,14 @@ const run = async () => {
     isCurrent: true,
   });
   console.log('Created initial gold rate entry.');
+
+  // --- Offers ---
+  await Offer.insertMany(offers);
+  console.log(`Created ${offers.length} offers.`);
+
+  // --- Banners ---
+  await Banner.insertMany(banners);
+  console.log(`Created ${banners.length} banners.`);
 
   console.log('\nSeed complete. Demo credentials:');
   console.log(`  Admin    -> email: ${admin.email} / password: ${process.env.SEED_ADMIN_PASSWORD || 'Admin@12345'}`);

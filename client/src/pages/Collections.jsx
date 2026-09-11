@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { fetchCollections } from '../services/catalogService';
 import SkeletonGrid from '../components/common/SkeletonLoader';
 import Breadcrumb from '../components/common/Breadcrumb';
+import Seo from '../components/common/Seo';
 
 const imgSeed = (name) => `https://picsum.photos/seed/col-${encodeURIComponent(name)}/700/500`;
 
@@ -18,6 +19,11 @@ const Collections = () => {
 
   return (
     <div className="container-page py-10">
+      <Seo
+        title="Collections"
+        description="Explore curated jewellery collections from Gayatri Jewellers — Gold, Diamond, Bridal, Daily Wear and more."
+        path="/collections"
+      />
       <Breadcrumb items={[{ label: 'Home', to: '/' }, { label: 'Collections' }]} />
       <h1 className="mt-4 font-display text-4xl">Our Collections</h1>
       <p className="mt-2 max-w-xl text-sm text-charcoal-soft">

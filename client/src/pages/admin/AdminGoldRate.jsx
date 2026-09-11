@@ -71,8 +71,9 @@ const AdminGoldRate = () => {
             ['silverRate', 'Silver Rate (₹/g)'],
           ].map(([key, label]) => (
             <div key={key}>
-              <label className="mb-1 block text-xs text-charcoal-soft">{label}</label>
+              <label htmlFor={`gold-rate-${key}`} className="mb-1 block text-xs text-charcoal-soft">{label}</label>
               <input
+                id={`gold-rate-${key}`}
                 type="number"
                 value={form[key]}
                 onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}

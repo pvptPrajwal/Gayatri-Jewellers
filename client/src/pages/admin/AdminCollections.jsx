@@ -109,10 +109,10 @@ const AdminCollections = () => {
                     {col.isActive ? 'Active' : 'Inactive'} {col.isFeatured && '· Featured'}
                   </p>
                 </div>
-                <button type="button" onClick={() => openEdit(col)} className="text-charcoal-soft hover:text-gold-deep">
+                <button type="button" onClick={() => openEdit(col)} aria-label={`Edit ${col.name}`} className="text-charcoal-soft hover:text-gold-deep">
                   <Pencil size={16} />
                 </button>
-                <button type="button" onClick={() => setToDelete(col)} className="text-charcoal-soft hover:text-maroon">
+                <button type="button" onClick={() => setToDelete(col)} aria-label={`Delete ${col.name}`} className="text-charcoal-soft hover:text-maroon">
                   <Trash2 size={16} />
                 </button>
               </div>
@@ -132,16 +132,18 @@ const AdminCollections = () => {
             </div>
             <div className="mt-4 space-y-4">
               <div>
-                <label className="mb-1 block text-xs text-charcoal-soft">Name</label>
+                <label htmlFor="collection-name" className="mb-1 block text-xs text-charcoal-soft">Name</label>
                 <input
+                  id="collection-name"
                   value={form.name}
                   onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                   className="input-field"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-xs text-charcoal-soft">Description</label>
+                <label htmlFor="collection-description" className="mb-1 block text-xs text-charcoal-soft">Description</label>
                 <textarea
+                  id="collection-description"
                   value={form.description}
                   onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                   rows={3}

@@ -3,6 +3,7 @@ import { fetchGoldRates } from '../services/miscService';
 import Breadcrumb from '../components/common/Breadcrumb';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { formatINR } from '../utils/formatCurrency';
+import Seo from '../components/common/Seo';
 
 const GoldRate = () => {
   const [data, setData] = useState(null);
@@ -16,6 +17,11 @@ const GoldRate = () => {
 
   return (
     <div className="container-page py-10">
+      <Seo
+        title="Today's Gold Rate"
+        description="Today's published gold and silver rates per gram from Gayatri Jewellers."
+        path="/gold-rate"
+      />
       <Breadcrumb items={[{ label: 'Home', to: '/' }, { label: "Today's Gold Rate" }]} />
       <h1 className="mt-4 font-display text-4xl">Today's Gold Rate</h1>
       <p className="mt-2 max-w-xl text-sm text-charcoal-soft">
