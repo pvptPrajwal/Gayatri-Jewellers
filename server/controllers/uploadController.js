@@ -4,7 +4,15 @@ const { cloudinary, isCloudinaryConfigured } = require('../config/cloudinary');
 const streamUpload = (buffer, folder) =>
   new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
-      { folder, resource_type: 'image', transformation: [{ width: 1600, crop: 'limit' }] },
+      {
+        folder,
+        resource_type: 'image',
+        // Cap dimensions so nobody accidentally uploads a multi-MB original,
+        // and let Cloudinary pick the smallest format/quality that still
+        // looks good (WebP/AVIF where the browser supports it) — this is
+        // the single biggest lever for page speed on an image-heavy site.
+        transformation: [{ width: 1600, crop: 'limit', quality: 'auto', fetch_format: 'auto' }],
+      },
       (error, result) => {
         if (result) resolve(result);
         else reject(error);

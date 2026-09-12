@@ -14,19 +14,27 @@ const getSiteSettings = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, settings });
 });
 
-// @desc    Update site-wide editable images (hero banner and/or footer logo)
+// Every editable image slot lives here — add a new Home/About image by
+// adding its field name to this list and to the SiteSettings schema.
+const EDITABLE_IMAGE_FIELDS = [
+  'heroImage',
+  'storeImage',
+  'aboutHeroImage',
+  'aboutWorkshopImage',
+];
+
+// @desc    Update site-wide editable images (Home page, About page, footer)
 // @route   PUT /api/site-settings
 // @access  Private/Admin
 const updateSiteSettings = asyncHandler(async (req, res) => {
-  const { heroImage, footerLogo } = req.body;
-
   let settings = await SiteSettings.findOne({ key: 'main' });
   if (!settings) {
     settings = new SiteSettings({ key: 'main' });
   }
 
-  if (heroImage !== undefined) settings.heroImage = heroImage;
-  if (footerLogo !== undefined) settings.footerLogo = footerLogo;
+  EDITABLE_IMAGE_FIELDS.forEach((field) => {
+    if (req.body[field] !== undefined) settings[field] = req.body[field];
+  });
 
   await settings.save();
   res.status(200).json({ success: true, settings });

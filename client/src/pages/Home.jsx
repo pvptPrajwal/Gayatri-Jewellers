@@ -7,7 +7,7 @@ import ProductGrid from '../components/common/ProductGrid';
 import Seo from '../components/common/Seo';
 import PromoBanners from '../components/common/PromoBanners';
 import { fetchSiteSettings } from '../services/siteSettingsService';
-import heroBanner from "./hero-banner.png";
+import heroBanner from "./hero-banner.webp";
 
 const categoryImageSeed = (name) => `https://picsum.photos/seed/cat-${encodeURIComponent(name)}/500/600`;
 const collectionImageSeed = (name) => `https://picsum.photos/seed/col-${encodeURIComponent(name)}/700/500`;
@@ -18,9 +18,10 @@ const Home = () => {
   const [newArrivals, setNewArrivals] = useState([]);
   const [bestSellers, setBestSellers] = useState([]);
   const [loading, setLoading] = useState(true);
-  // Admin-editable hero image — falls back to the bundled default until
+  // Admin-editable images — fall back to bundled/placeholder defaults until
   // (or unless) an admin uploads one from /admin/site-images.
   const [heroImage, setHeroImage] = useState(null);
+  const [storeImage, setStoreImage] = useState(null);
 
   useEffect(() => {
     let mounted = true;
@@ -39,6 +40,7 @@ const Home = () => {
         setNewArrivals(newRes.products);
         setBestSellers(bestRes.products);
         if (settings?.heroImage?.url) setHeroImage(settings.heroImage.url);
+        if (settings?.storeImage?.url) setStoreImage(settings.storeImage.url);
       } catch (err) {
         console.error(err);
       } finally {
@@ -77,6 +79,7 @@ const Home = () => {
             src={heroImage || heroBanner}
             alt="Featured bridal jewellery"
             className="h-full w-full object-cover"
+            fetchpriority="high"
           />
         </div>
       </section>
@@ -210,8 +213,9 @@ const Home = () => {
           </div>
           <div className="aspect-[4/3] w-full overflow-hidden">
             <img
-              src="https://picsum.photos/seed/gayatri-store/800/600"
+              src={storeImage || "https://picsum.photos/seed/gayatri-store/800/600"}
               alt="Gayatri Jewellers showroom"
+              loading="lazy"
               className="h-full w-full object-cover"
             />
           </div>
