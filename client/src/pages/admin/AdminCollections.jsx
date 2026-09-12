@@ -9,6 +9,7 @@ import {
 } from '../../services/catalogService';
 import { SingleImageUploader } from '../../components/admin/ImageUploader';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { optimizedImage } from '../../utils/cloudinary';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 
 const emptyForm = { name: '', description: '', image: null, isActive: true, isFeatured: false };
@@ -101,7 +102,7 @@ const AdminCollections = () => {
             <div key={col._id} className="border border-sand-dark bg-ivory p-4">
               <div className="flex items-center gap-3">
                 <div className="h-14 w-14 shrink-0 overflow-hidden bg-sand">
-                  {col.image?.url && <img src={col.image.url} alt="" className="h-full w-full object-cover" />}
+                  {col.image?.url && <img src={optimizedImage(col.image.url, 100)} alt="" className="h-full w-full object-cover" />}
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium">{col.name}</p>

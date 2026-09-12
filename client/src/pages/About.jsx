@@ -4,6 +4,7 @@ import { Gem, ShieldCheck, Users, Award } from 'lucide-react';
 import Breadcrumb from '../components/common/Breadcrumb';
 import Seo from '../components/common/Seo';
 import { fetchSiteSettings } from '../services/siteSettingsService';
+import { optimizedImage } from '../utils/cloudinary';
 
 const About = () => {
   // Admin-editable images — fall back to placeholders until an admin
@@ -34,7 +35,7 @@ const About = () => {
       />
       <div className="relative h-[45vh] min-h-[320px] w-full overflow-hidden">
         <img
-          src={heroImage || "https://picsum.photos/seed/gayatri-about-hero/1600/800"}
+          src={optimizedImage(heroImage, 1600) || "https://picsum.photos/seed/gayatri-about-hero/1600/800"}
           alt="Gayatri Jewellers craftsmanship"
           className="h-full w-full object-cover"
           fetchpriority="high"
@@ -68,7 +69,7 @@ const About = () => {
         </div>
         <div className="aspect-[4/3] overflow-hidden bg-sand">
           <img
-            src={workshopImage || "https://picsum.photos/seed/gayatri-workshop/800/600"}
+            src={optimizedImage(workshopImage, 800) || "https://picsum.photos/seed/gayatri-workshop/800/600"}
             alt="Gayatri Jewellers workshop"
             loading="lazy"
             className="h-full w-full object-cover"

@@ -7,6 +7,7 @@ import ProductGrid from '../components/common/ProductGrid';
 import Seo from '../components/common/Seo';
 import PromoBanners from '../components/common/PromoBanners';
 import { fetchSiteSettings } from '../services/siteSettingsService';
+import { optimizedImage } from '../utils/cloudinary';
 import heroBanner from "./hero-banner.webp";
 
 const categoryImageSeed = (name) => `https://picsum.photos/seed/cat-${encodeURIComponent(name)}/500/600`;
@@ -76,7 +77,7 @@ const Home = () => {
         </div>
         <div className="aspect-[4/5] w-full overflow-hidden bg-sand">
           <img
-            src={heroImage || heroBanner}
+            src={optimizedImage(heroImage, 900) || heroBanner}
             alt="Featured bridal jewellery"
             className="h-full w-full object-cover"
             fetchpriority="high"
@@ -99,7 +100,7 @@ const Home = () => {
             <Link key={cat._id} to={`/shop?category=${cat._id}`} className="group text-center">
               <div className="aspect-square overflow-hidden bg-sand">
                 <img
-                  src={cat.image?.url || categoryImageSeed(cat.name)}
+                  src={optimizedImage(cat.image?.url, 200) || categoryImageSeed(cat.name)}
                   alt={cat.name}
                   loading="lazy"
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -121,7 +122,7 @@ const Home = () => {
               <Link key={col._id} to={`/shop?collection=${col._id}`} className="group relative block overflow-hidden">
                 <div className="aspect-[7/5] w-full overflow-hidden">
                   <img
-                    src={col.image?.url || collectionImageSeed(col.name)}
+                    src={optimizedImage(col.image?.url, 500) || collectionImageSeed(col.name)}
                     alt={col.name}
                     loading="lazy"
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -213,7 +214,7 @@ const Home = () => {
           </div>
           <div className="aspect-[4/3] w-full overflow-hidden">
             <img
-              src={storeImage || "https://picsum.photos/seed/gayatri-store/800/600"}
+              src={optimizedImage(storeImage, 800) || "https://picsum.photos/seed/gayatri-store/800/600"}
               alt="Gayatri Jewellers showroom"
               loading="lazy"
               className="h-full w-full object-cover"

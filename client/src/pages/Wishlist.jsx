@@ -7,6 +7,7 @@ import { addToCart } from '../features/cart/cartSlice';
 import { formatINR } from '../utils/formatCurrency';
 import EmptyState from '../components/common/EmptyState';
 import Breadcrumb from '../components/common/Breadcrumb';
+import { optimizedImage } from '../utils/cloudinary';
 
 const Wishlist = () => {
   const items = useSelector((state) => state.wishlist.items);
@@ -49,7 +50,7 @@ const Wishlist = () => {
               <X size={16} />
             </button>
             <Link to={`/product/${item.slug}`} className="aspect-square overflow-hidden bg-sand">
-              <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
+              <img src={optimizedImage(item.image, 300)} alt={item.name} className="h-full w-full object-cover" />
             </Link>
             <Link to={`/product/${item.slug}`} className="mt-3 font-display text-lg text-charcoal">
               {item.name}

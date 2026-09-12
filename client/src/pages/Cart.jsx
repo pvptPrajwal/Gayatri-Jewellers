@@ -7,6 +7,7 @@ import { formatINR } from '../utils/formatCurrency';
 import EmptyState from '../components/common/EmptyState';
 import Breadcrumb from '../components/common/Breadcrumb';
 import { useAuth } from '../hooks/useAuth';
+import { optimizedImage } from '../utils/cloudinary';
 
 const Cart = () => {
   const items = useSelector((state) => state.cart.items);
@@ -53,7 +54,7 @@ const Cart = () => {
           {items.map((item) => (
             <div key={item.productId} className="flex gap-4 py-6">
               <Link to={`/product/${item.slug}`} className="h-24 w-24 shrink-0 overflow-hidden bg-sand">
-                <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
+                <img src={optimizedImage(item.image, 150)} alt={item.name} className="h-full w-full object-cover" />
               </Link>
               <div className="flex flex-1 flex-col justify-between">
                 <div className="flex justify-between gap-4">

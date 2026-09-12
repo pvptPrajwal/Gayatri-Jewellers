@@ -6,6 +6,7 @@ import { formatINR } from '../utils/formatCurrency';
 import Breadcrumb from '../components/common/Breadcrumb';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import EmptyState from '../components/common/EmptyState';
+import { optimizedImage } from '../utils/cloudinary';
 
 const STATUS_FLOW = ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED'];
 const STATUS_LABELS = {
@@ -84,7 +85,7 @@ const OrderDetails = () => {
           <div className="mt-4 divide-y divide-sand-dark/60 border-y border-sand-dark/60">
             {order.orderItems.map((item) => (
               <div key={item.product} className="flex items-center gap-4 py-4">
-                <img src={item.image} alt={item.name} className="h-16 w-16 object-cover" />
+                <img src={optimizedImage(item.image, 150)} alt={item.name} className="h-16 w-16 object-cover" />
                 <div className="flex-1">
                   <p className="font-display text-lg">{item.name}</p>
                   <p className="text-xs text-charcoal-soft">SKU: {item.sku} · Qty: {item.quantity}</p>

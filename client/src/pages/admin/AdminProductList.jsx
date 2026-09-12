@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { fetchProducts, deleteProduct } from '../../services/productService';
 import { formatINR } from '../../utils/formatCurrency';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { optimizedImage } from '../../utils/cloudinary';
 import EmptyState from '../../components/common/EmptyState';
 import Pagination from '../../components/common/Pagination';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
@@ -91,7 +92,7 @@ const AdminProductList = () => {
               {result.products.map((p) => (
                 <tr key={p._id}>
                   <td className="flex items-center gap-3 px-4 py-3">
-                    <img src={p.mainImage?.url} alt="" className="h-10 w-10 object-cover" />
+                    <img src={optimizedImage(p.mainImage?.url, 80)} alt="" className="h-10 w-10 object-cover" />
                     <span className="max-w-[160px] truncate">{p.name}</span>
                   </td>
                   <td className="px-4 py-3 text-charcoal-soft">{p.sku}</td>

@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { fetchBanners, createBanner, updateBanner, deleteBanner } from '../../services/offerBannerService';
 import { SingleImageUploader } from '../../components/admin/ImageUploader';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { optimizedImage } from '../../utils/cloudinary';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 
 const emptyForm = { title: '', subtitle: '', image: null, link: '', buttonText: 'Shop Now', isActive: true };
@@ -99,7 +100,7 @@ const AdminBanners = () => {
           {banners.map((banner) => (
             <div key={banner._id} className="flex items-center gap-3 border border-sand-dark bg-ivory p-4">
               <div className="h-16 w-24 shrink-0 overflow-hidden bg-sand">
-                {banner.image?.url && <img src={banner.image.url} alt="" className="h-full w-full object-cover" />}
+                {banner.image?.url && <img src={optimizedImage(banner.image.url, 150)} alt="" className="h-full w-full object-cover" />}
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate font-medium">{banner.title || '(no title)'}</p>

@@ -6,6 +6,7 @@ import Breadcrumb from '../components/common/Breadcrumb';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import EmptyState from '../components/common/EmptyState';
 import Seo from '../components/common/Seo';
+import { optimizedImage } from '../utils/cloudinary';
 
 const DISCOUNT_LABEL = {
   PERCENTAGE: (v) => `${v}% OFF`,
@@ -56,7 +57,7 @@ const Offers = () => {
               <div key={offer._id} className="flex flex-col border border-sand-dark bg-ivory">
                 <div className="aspect-[16/9] w-full overflow-hidden bg-sand">
                   <img
-                    src={offer.image?.url || `https://picsum.photos/seed/offer-${offer._id}/600/340`}
+                    src={optimizedImage(offer.image?.url, 600) || `https://picsum.photos/seed/offer-${offer._id}/600/340`}
                     alt={offer.title}
                     className="h-full w-full object-cover"
                   />

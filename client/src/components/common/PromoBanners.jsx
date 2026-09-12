@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { fetchBanners } from '../../services/offerBannerService';
+import { optimizedImage } from '../../utils/cloudinary';
 
 const isExternal = (link) => /^https?:\/\//.test(link || '');
 
@@ -24,7 +25,7 @@ const PromoBanners = () => {
   const banner = banners[index];
   const content = (
     <>
-      <img src={banner.image?.url} alt={banner.title || 'Promotional banner'} className="h-full w-full object-cover" />
+      <img src={optimizedImage(banner.image?.url, 1600)} alt={banner.title || 'Promotional banner'} className="h-full w-full object-cover" />
       <div className="absolute inset-0 bg-gradient-to-r from-charcoal/70 via-charcoal/20 to-transparent" />
       <div className="absolute inset-y-0 left-0 flex flex-col items-start justify-center gap-3 p-6 text-ivory sm:p-12">
         {banner.title && <h2 className="max-w-md font-display text-3xl sm:text-4xl">{banner.title}</h2>}
