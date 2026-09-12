@@ -29,13 +29,17 @@ const AdminGoldRate = () => {
     }
     setSaving(true);
     try {
-      await createGoldRate({
+      const result = await createGoldRate({
         rate24k: Number(form.rate24k),
         rate22k: Number(form.rate22k),
         rate18k: Number(form.rate18k),
         silverRate: Number(form.silverRate),
       });
-      toast.success('Gold rate updated');
+      toast.success(
+        result.updatedProductsCount > 0
+          ? `Gold rate updated — ${result.updatedProductsCount} product price(s) recalculated`
+          : 'Gold rate updated'
+      );
       setForm(emptyForm);
       load();
     } catch (err) {

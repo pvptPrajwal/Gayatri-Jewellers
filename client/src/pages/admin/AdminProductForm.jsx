@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -7,11 +7,21 @@ import toast from 'react-hot-toast';
 import { ArrowLeft } from 'lucide-react';
 import { fetchProductById, createProduct, updateProduct } from '../../services/productService';
 import { fetchCategories, fetchCollections } from '../../services/catalogService';
+import { fetchGoldRates } from '../../services/miscService';
 import { SingleImageUploader, MultiImageUploader } from '../../components/admin/ImageUploader';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { formatINR } from '../../utils/formatCurrency';
 
 const METALS = ['Gold', 'Silver', 'Platinum', 'Diamond', 'Rose Gold', 'White Gold'];
 const GENDERS = ['Men', 'Women', 'Unisex', 'Kids'];
+const RATE_TYPES = [
+  { value: 'NONE', label: 'Manual Price (no live rate)' },
+  { value: '24K', label: '24K Gold Rate' },
+  { value: '22K', label: '22K Gold Rate' },
+  { value: '18K', label: '18K Gold Rate' },
+  { value: 'SILVER', label: 'Silver Rate' },
+];
+const RATE_FIELD_MAP = { '24K': 'rate24k', '22K': 'rate22k', '18K': 'rate18k', SILVER: 'silverRate' };
 
 const schema = yup.object({
   name: yup.string().required('Product name is required'),
@@ -27,9 +37,15 @@ const schema = yup.object({
   diamondWeight: yup.number().typeError('Enter a number').min(0).default(0),
   stoneType: yup.string(),
   size: yup.string(),
-  basePrice: yup.number().typeError('Enter a number').positive().required('Base price is required'),
-  makingCharges: yup.number().typeError('Enter a number').min(0).default(0),
-  discount: yup.number().typeError('Enter a number').min(0).max(100).default(0),
+  rateType: yup.string().oneOf(['NONE', '24K', '22K', '18K', 'SILVER']).required(),
+  basePrice: yup.number().typeError('Enter a number').min(0).when('rateType', {
+    is: 'NONE',
+    then: (s) => s.positive('Enter the manual rate for this product').required('Rate is required when not linked to a live gold/silver rate'),
+    otherwise: (s) => s.notRequired(),
+  }),
+  marginType: yup.string().oneOf(['PERCENTAGE', 'FLAT']).required(),
+  marginValue: yup.number().typeError('Enter a number').min(0).required('Margin is required (enter 0 if none)'),
+  gstPercent: yup.number().typeError('Enter a number').min(0).max(100).required('GST % is required (enter 0 if exempt)'),
   stockQuantity: yup.number().typeError('Enter a number').min(0).required('Stock quantity is required'),
   gender: yup.string().required(),
   tags: yup.string(),
@@ -42,6 +58,7 @@ const AdminProductForm = () => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [collections, setCollections] = useState([]);
+  const [goldRate, setGoldRate] = useState(null);
   const [mainImage, setMainImage] = useState(null);
   const [images, setImages] = useState([]);
   const [flags, setFlags] = useState({ isNewArrival: false, isBestSeller: false, isFeatured: false });
@@ -52,13 +69,29 @@ const AdminProductForm = () => {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
-  } = useForm({ resolver: yupResolver(schema) });
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: { rateType: 'NONE', marginType: 'PERCENTAGE', marginValue: 0, gstPercent: 3 },
+  });
+
+  const rateType = watch('rateType');
+  const basePrice = watch('basePrice');
+  const marginType = watch('marginType');
+  const marginValue = watch('marginValue');
+  const gstPercent = watch('gstPercent');
+  const grossWeight = watch('grossWeight');
 
   useEffect(() => {
-    Promise.all([fetchCategories({ all: 'true' }), fetchCollections({ all: 'true' })]).then(([cats, cols]) => {
+    Promise.all([
+      fetchCategories({ all: 'true' }),
+      fetchCollections({ all: 'true' }),
+      fetchGoldRates(1).catch(() => null),
+    ]).then(([cats, cols, rates]) => {
       setCategories(cats);
       setCollections(cols);
+      if (rates?.current) setGoldRate(rates.current);
     });
   }, []);
 
@@ -80,9 +113,11 @@ const AdminProductForm = () => {
           diamondWeight: p.diamondWeight,
           stoneType: p.stoneType,
           size: p.size,
-          basePrice: p.basePrice,
-          makingCharges: p.makingCharges,
-          discount: p.discount,
+          rateType: p.rateType || 'NONE',
+          basePrice: p.basePrice || 0,
+          marginType: p.marginType || 'PERCENTAGE',
+          marginValue: p.marginValue || 0,
+          gstPercent: p.gstPercent ?? 3,
           stockQuantity: p.stockQuantity,
           gender: p.gender,
           tags: (p.tags || []).join(', '),
@@ -96,6 +131,24 @@ const AdminProductForm = () => {
       .finally(() => setLoading(false));
   }, [id, isEdit, reset]);
 
+  // Live price preview — mirrors the backend's Rate + Margin + GST formula
+  // exactly, so the admin sees the real final price before saving.
+  const pricePreview = useMemo(() => {
+    let rateAmount = 0;
+    let ratePerGram = null;
+    if (rateType && rateType !== 'NONE') {
+      ratePerGram = goldRate ? goldRate[RATE_FIELD_MAP[rateType]] : null;
+      rateAmount = (ratePerGram || 0) * (Number(grossWeight) || 0);
+    } else {
+      rateAmount = Number(basePrice) || 0;
+    }
+    const marginAmount =
+      marginType === 'FLAT' ? Number(marginValue) || 0 : rateAmount * ((Number(marginValue) || 0) / 100);
+    const subtotal = rateAmount + marginAmount;
+    const gstAmount = subtotal * ((Number(gstPercent) || 0) / 100);
+    return { ratePerGram, rateAmount, marginAmount, gstAmount, finalPrice: subtotal + gstAmount };
+  }, [rateType, goldRate, grossWeight, basePrice, marginType, marginValue, gstPercent]);
+
   const onSubmit = async (formData) => {
     if (!mainImage) {
       toast.error('Please upload a main product image');
@@ -105,8 +158,7 @@ const AdminProductForm = () => {
     const payload = {
       ...formData,
       diamondWeight: formData.diamondWeight || 0,
-      makingCharges: formData.makingCharges || 0,
-      discount: formData.discount || 0,
+      basePrice: formData.rateType === 'NONE' ? formData.basePrice : 0,
       collection: formData.collection || undefined,
       tags: formData.tags ? formData.tags.split(',').map((t) => t.trim()).filter(Boolean) : [],
       occasion: formData.occasion ? formData.occasion.split(',').map((t) => t.trim()).filter(Boolean) : [],
@@ -230,18 +282,56 @@ const AdminProductForm = () => {
 
         {/* Pricing */}
         <FormSection title="Pricing">
-          <Field label="Base Price (₹)" error={errors.basePrice}>
-            <input type="number" {...register('basePrice')} className="input-field" />
+          <Field label="Rate Type" error={errors.rateType} full>
+            <select {...register('rateType')} className="input-field">
+              {RATE_TYPES.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
+            </select>
           </Field>
-          <Field label="Making Charges (₹)" error={errors.makingCharges}>
-            <input type="number" {...register('makingCharges')} className="input-field" />
+
+          {rateType === 'NONE' ? (
+            <Field label="Rate — Manual Price (₹)" error={errors.basePrice} full>
+              <input type="number" {...register('basePrice')} className="input-field" />
+            </Field>
+          ) : (
+            <div className="sm:col-span-2 border border-sand-dark bg-sand/40 p-3 text-xs text-charcoal-soft">
+              {goldRate ? (
+                pricePreview.ratePerGram ? (
+                  <>Current {rateType} rate: <strong>{formatINR(pricePreview.ratePerGram)}/g</strong> × {grossWeight || 0}g gross weight = <strong>{formatINR(pricePreview.rateAmount)}</strong></>
+                ) : (
+                  <>No {rateType} rate found in the current gold rate entry.</>
+                )
+              ) : (
+                <>No gold rate has been published yet — publish one under Admin → Gold Rate first.</>
+              )}
+            </div>
+          )}
+
+          <Field label="Margin Type" error={errors.marginType}>
+            <select {...register('marginType')} className="input-field">
+              <option value="PERCENTAGE">Percentage (%)</option>
+              <option value="FLAT">Flat Amount (₹)</option>
+            </select>
           </Field>
-          <Field label="Discount (%)" error={errors.discount}>
-            <input type="number" {...register('discount')} className="input-field" />
+          <Field label={marginType === 'FLAT' ? 'Margin (₹)' : 'Margin (%)'} error={errors.marginValue}>
+            <input type="number" step="0.01" {...register('marginValue')} className="input-field" />
           </Field>
-          <p className="col-span-2 text-xs text-charcoal-soft">
-            Final price is calculated automatically on save: (base + making) − discount%.
-          </p>
+
+          <Field label="GST (%)" error={errors.gstPercent}>
+            <input type="number" step="0.01" {...register('gstPercent')} className="input-field" />
+          </Field>
+
+          <div className="sm:col-span-2 border border-gold/40 bg-gold/5 p-4">
+            <p className="text-xs text-charcoal-soft">
+              Rate {formatINR(pricePreview.rateAmount)} + Margin {formatINR(pricePreview.marginAmount)} + GST {formatINR(pricePreview.gstAmount)}
+            </p>
+            <p className="mt-1 font-display text-2xl text-charcoal">
+              = {formatINR(pricePreview.finalPrice)}
+            </p>
+            <p className="mt-1 text-[11px] text-charcoal-soft">
+              This is a live preview. The actual saved price is calculated the same way on the server, and
+              recalculates automatically whenever a new gold/silver rate is published.
+            </p>
+          </div>
         </FormSection>
 
         {/* Inventory */}

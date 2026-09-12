@@ -180,11 +180,7 @@ const ProductDetails = () => {
 
           <p className="mt-4 flex items-baseline gap-3">
             <span className="text-2xl font-medium text-charcoal">{formatINR(product.finalPrice)}</span>
-            {product.discount > 0 && (
-              <span className="text-sm text-charcoal-soft line-through">
-                {formatINR(product.basePrice + product.makingCharges)}
-              </span>
-            )}
+            <span className="text-xs text-charcoal-soft">incl. GST{product.gstPercent ? ` (${product.gstPercent}%)` : ''}</span>
           </p>
           <p
             className={`mt-1 text-xs ${

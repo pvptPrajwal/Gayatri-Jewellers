@@ -24,7 +24,7 @@ export const fetchGoldRates = async (limit) => {
 
 export const createGoldRate = async (payload) => {
   const { data } = await api.post('/gold-rates', payload);
-  return data.rate;
+  return data; // { rate, updatedProductsCount }
 };
 
 // --- Reviews ---

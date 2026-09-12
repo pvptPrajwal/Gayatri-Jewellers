@@ -102,6 +102,18 @@ const run = async () => {
   const collectionMap = Object.fromEntries(createdCollections.map((c) => [c.name, c._id]));
   console.log(`Created ${createdCollections.length} collections.`);
 
+  // --- Gold Rate (seeded before Products: rate-linked products compute
+  // their finalPrice from the current gold rate on creation, so the rate
+  // must already exist) ---
+  await GoldRate.create({
+    rate24k: 7250,
+    rate22k: 6645,
+    rate18k: 5438,
+    silverRate: 92,
+    isCurrent: true,
+  });
+  console.log('Created initial gold rate entry.');
+
   // --- Products ---
   const productDocs = productTemplates.map((tpl, idx) => {
     const sku = `RJ-${String(idx + 1).padStart(4, '0')}`;
@@ -123,7 +135,11 @@ const run = async () => {
       stoneType: tpl.stoneType || '',
       size: tpl.size || '',
       basePrice: tpl.basePrice,
-      makingCharges: tpl.makingCharges,
+      rateType: tpl.rateType || 'NONE',
+      marginType: tpl.marginType || 'PERCENTAGE',
+      marginValue: tpl.marginValue || 0,
+      gstPercent: tpl.gstPercent ?? 3,
+      makingCharges: tpl.makingCharges || 0,
       discount: tpl.discount || 0,
       stockQuantity: tpl.stockQuantity,
       gender: tpl.gender,
@@ -152,16 +168,6 @@ const run = async () => {
   // --- FAQs ---
   await FAQ.insertMany(faqs);
   console.log(`Created ${faqs.length} FAQs.`);
-
-  // --- Gold Rate (today's starting rate) ---
-  await GoldRate.create({
-    rate24k: 7250,
-    rate22k: 6645,
-    rate18k: 5438,
-    silverRate: 92,
-    isCurrent: true,
-  });
-  console.log('Created initial gold rate entry.');
 
   // --- Offers ---
   await Offer.insertMany(offers);

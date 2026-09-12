@@ -55,11 +55,6 @@ const ProductCard = ({ product }) => {
             NEW
           </span>
         )}
-        {product.discount > 0 && (
-          <span className="absolute bottom-3 left-3 bg-maroon px-2 py-1 text-[10px] tracking-widest2 text-ivory">
-            {product.discount}% OFF
-          </span>
-        )}
       </div>
 
       <div className="mt-3 flex flex-col">
@@ -71,11 +66,7 @@ const ProductCard = ({ product }) => {
         </p>
         <div className="mt-1.5 flex items-baseline gap-2">
           <span className="text-base font-medium text-charcoal">{formatINR(product.finalPrice)}</span>
-          {product.discount > 0 && (
-            <span className="text-xs text-charcoal-soft line-through">
-              {formatINR(product.basePrice + product.makingCharges)}
-            </span>
-          )}
+          <span className="text-[10px] text-charcoal-soft">incl. GST</span>
         </div>
       </div>
     </Link>

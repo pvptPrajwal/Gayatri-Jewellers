@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const { computeFinalPrice } = require('../utils/pricing');
 
 const imageSchema = new mongoose.Schema(
   {
@@ -37,9 +38,27 @@ const productSchema = new mongoose.Schema(
     stoneType: { type: String, default: '' },
     size: { type: String, default: '' },
 
-    basePrice: { type: Number, required: true, min: 0 },
+    // Pricing: Final Price = Rate + Margin + GST
+    // Rate: if rateType is set, Rate = (live per-gram rate for that purity)
+    // × grossWeight, pulled from the current GoldRate whenever the price is
+    // computed. If rateType is 'NONE' (no live rate — e.g. Platinum,
+    // Diamond-only pieces), Rate = basePrice, entered manually.
+    rateType: { type: String, enum: ['24K', '22K', '18K', 'SILVER', 'NONE'], default: 'NONE' },
+    basePrice: { type: Number, default: 0, min: 0 }, // manual Rate, used only when rateType is 'NONE'
+
+    // Margin: stored exactly as the admin entered it (percentage of Rate,
+    // or a flat ₹ amount) — never auto-converted between the two types.
+    marginType: { type: String, enum: ['PERCENTAGE', 'FLAT'], default: 'PERCENTAGE' },
+    marginValue: { type: Number, default: 0, min: 0 },
+
+    gstPercent: { type: Number, default: 3, min: 0, max: 100 },
+
+    // Deprecated: no longer used in price calculation (kept only so old
+    // documents/data don't break). New pricing uses rateType/basePrice +
+    // marginType/marginValue + gstPercent above instead.
     makingCharges: { type: Number, default: 0, min: 0 },
-    discount: { type: Number, default: 0, min: 0, max: 100 }, // percentage
+    discount: { type: Number, default: 0, min: 0, max: 100 },
+
     finalPrice: { type: Number, min: 0 },
 
     stockQuantity: { type: Number, required: true, default: 0, min: 0 },
@@ -83,10 +102,15 @@ productSchema.pre('validate', function generateSlug(next) {
   next();
 });
 
-productSchema.pre('save', function computeDerivedFields(next) {
-  const subtotal = (this.basePrice || 0) + (this.makingCharges || 0);
-  const discountAmount = subtotal * ((this.discount || 0) / 100);
-  this.finalPrice = Math.round((subtotal - discountAmount) * 100) / 100;
+productSchema.pre('save', async function computeDerivedFields(next) {
+  let goldRate = null;
+  if (this.rateType && this.rateType !== 'NONE') {
+    // Lazily required to avoid a require-cycle at module load time.
+    const GoldRate = require('./GoldRate'); // eslint-disable-line global-require
+    goldRate = await GoldRate.findOne({ isCurrent: true }).sort({ date: -1 });
+  }
+
+  this.finalPrice = computeFinalPrice(this, goldRate).finalPrice;
 
   if (this.stockQuantity <= 0) {
     this.stockStatus = 'OUT_OF_STOCK';
