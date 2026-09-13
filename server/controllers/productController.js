@@ -1,5 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const Product = require('../models/Product');
+const GoldRate = require('../models/GoldRate');
+const { computeFinalPrice, RATE_FIELD_MAP } = require('../utils/pricing');
 
 // @desc    Get products with search, filters, sorting and pagination
 // @route   GET /api/products
@@ -126,7 +128,21 @@ const getProductBySlug = asyncHandler(async (req, res) => {
     .limit(8)
     .select('name slug mainImage finalPrice metal purity rating');
 
-  res.status(200).json({ success: true, product, relatedProducts });
+  // Full price breakdown for the storefront's price table — recomputed
+  // fresh against the current gold rate rather than trusting only the
+  // stored finalPrice, so it's accurate even if this product hasn't been
+  // resaved since the last rate change (bulk recalculation on rate
+  // publish keeps them in sync in practice, but this guards against drift).
+  let goldRate = null;
+  if (product.rateType && product.rateType !== 'NONE') {
+    goldRate = await GoldRate.findOne({ isCurrent: true }).sort({ date: -1 });
+  }
+  const priceBreakdown = computeFinalPrice(product, goldRate);
+  if (goldRate && product.rateType !== 'NONE') {
+    priceBreakdown.ratePerGram = goldRate[RATE_FIELD_MAP[product.rateType]] || 0;
+  }
+
+  res.status(200).json({ success: true, product, relatedProducts, priceBreakdown });
 });
 
 // @desc    Create a product

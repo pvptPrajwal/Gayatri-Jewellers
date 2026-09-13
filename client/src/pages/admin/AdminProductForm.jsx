@@ -46,6 +46,9 @@ const schema = yup.object({
   marginType: yup.string().oneOf(['PERCENTAGE', 'FLAT']).required(),
   marginValue: yup.number().typeError('Enter a number').min(0).required('Margin is required (enter 0 if none)'),
   gstPercent: yup.number().typeError('Enter a number').min(0).max(100).required('GST % is required (enter 0 if exempt)'),
+  discountAppliesTo: yup.string().oneOf(['MARGIN', 'FINAL_AMOUNT']).required(),
+  discountType: yup.string().oneOf(['PERCENTAGE', 'FLAT']).required(),
+  discountValue: yup.number().typeError('Enter a number').min(0).required('Discount is required (enter 0 if none)'),
   stockQuantity: yup.number().typeError('Enter a number').min(0).required('Stock quantity is required'),
   gender: yup.string().required(),
   tags: yup.string(),
@@ -73,7 +76,7 @@ const AdminProductForm = () => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: { rateType: 'NONE', marginType: 'PERCENTAGE', marginValue: 0, gstPercent: 3 },
+    defaultValues: { rateType: 'NONE', marginType: 'PERCENTAGE', marginValue: 0, gstPercent: 3, discountAppliesTo: 'FINAL_AMOUNT', discountType: 'PERCENTAGE', discountValue: 0 },
   });
 
   const rateType = watch('rateType');
@@ -81,6 +84,9 @@ const AdminProductForm = () => {
   const marginType = watch('marginType');
   const marginValue = watch('marginValue');
   const gstPercent = watch('gstPercent');
+  const discountAppliesTo = watch('discountAppliesTo');
+  const discountType = watch('discountType');
+  const discountValue = watch('discountValue');
   const grossWeight = watch('grossWeight');
 
   useEffect(() => {
@@ -118,6 +124,9 @@ const AdminProductForm = () => {
           marginType: p.marginType || 'PERCENTAGE',
           marginValue: p.marginValue || 0,
           gstPercent: p.gstPercent ?? 3,
+          discountAppliesTo: p.discountAppliesTo || 'FINAL_AMOUNT',
+          discountType: p.discountType || 'PERCENTAGE',
+          discountValue: p.discountValue || 0,
           stockQuantity: p.stockQuantity,
           gender: p.gender,
           tags: (p.tags || []).join(', '),
@@ -131,8 +140,9 @@ const AdminProductForm = () => {
       .finally(() => setLoading(false));
   }, [id, isEdit, reset]);
 
-  // Live price preview — mirrors the backend's Rate + Margin + GST formula
-  // exactly, so the admin sees the real final price before saving.
+  // Live price preview — mirrors the backend's pricing formula exactly
+  // (including which of the two discount modes is selected), so the admin
+  // sees the real final price before saving.
   const pricePreview = useMemo(() => {
     let rateAmount = 0;
     let ratePerGram = null;
@@ -144,10 +154,25 @@ const AdminProductForm = () => {
     }
     const marginAmount =
       marginType === 'FLAT' ? Number(marginValue) || 0 : rateAmount * ((Number(marginValue) || 0) / 100);
+
+    if (discountAppliesTo === 'MARGIN') {
+      const discountAmount =
+        discountType === 'FLAT' ? Number(discountValue) || 0 : marginAmount * ((Number(discountValue) || 0) / 100);
+      const effectiveMargin = Math.max(0, marginAmount - discountAmount);
+      const subtotal = rateAmount + effectiveMargin;
+      const gstAmount = subtotal * ((Number(gstPercent) || 0) / 100);
+      const finalPrice = subtotal + gstAmount;
+      return { ratePerGram, rateAmount, marginAmount, discountAmount, effectiveMargin, gstAmount, grandTotal: finalPrice, finalPrice };
+    }
+
     const subtotal = rateAmount + marginAmount;
     const gstAmount = subtotal * ((Number(gstPercent) || 0) / 100);
-    return { ratePerGram, rateAmount, marginAmount, gstAmount, finalPrice: subtotal + gstAmount };
-  }, [rateType, goldRate, grossWeight, basePrice, marginType, marginValue, gstPercent]);
+    const grandTotal = subtotal + gstAmount;
+    const discountAmount =
+      discountType === 'FLAT' ? Number(discountValue) || 0 : grandTotal * ((Number(discountValue) || 0) / 100);
+    const finalPrice = Math.max(0, grandTotal - discountAmount);
+    return { ratePerGram, rateAmount, marginAmount, effectiveMargin: marginAmount, gstAmount, grandTotal, discountAmount, finalPrice };
+  }, [rateType, goldRate, grossWeight, basePrice, marginType, marginValue, gstPercent, discountAppliesTo, discountType, discountValue]);
 
   const onSubmit = async (formData) => {
     if (!mainImage) {
@@ -320,16 +345,54 @@ const AdminProductForm = () => {
             <input type="number" step="0.01" {...register('gstPercent')} className="input-field" />
           </Field>
 
+          <Field label="Discount Applies To" error={errors.discountAppliesTo} full>
+            <select {...register('discountAppliesTo')} className="input-field">
+              <option value="FINAL_AMOUNT">Final Price (after Rate + Margin + GST)</option>
+              <option value="MARGIN">Margin / Making Charges (before GST)</option>
+            </select>
+          </Field>
+
+          <Field label="Discount Type" error={errors.discountType}>
+            <select {...register('discountType')} className="input-field">
+              <option value="PERCENTAGE">Percentage (%)</option>
+              <option value="FLAT">Flat Amount (₹)</option>
+            </select>
+          </Field>
+          <Field
+            label={
+              discountType === 'FLAT'
+                ? 'Discount (₹)'
+                : `Discount (% of ${discountAppliesTo === 'MARGIN' ? 'margin' : 'final price'})`
+            }
+            error={errors.discountValue}
+          >
+            <input type="number" step="0.01" {...register('discountValue')} className="input-field" />
+          </Field>
+          <p className="sm:col-span-2 text-xs text-charcoal-soft">
+            {discountAppliesTo === 'MARGIN'
+              ? 'Discount reduces the Margin (Making Charges) amount before GST is calculated — so GST is charged on the discounted margin.'
+              : 'Discount is applied to the final amount — after Rate, Margin and GST are totalled. GST is unaffected by this discount.'}
+          </p>
+
           <div className="sm:col-span-2 border border-gold/40 bg-gold/5 p-4">
             <p className="text-xs text-charcoal-soft">
-              Rate {formatINR(pricePreview.rateAmount)} + Margin {formatINR(pricePreview.marginAmount)} + GST {formatINR(pricePreview.gstAmount)}
+              Rate {formatINR(pricePreview.rateAmount)}
+              {discountAppliesTo === 'MARGIN' ? (
+                <> + Margin {formatINR(pricePreview.effectiveMargin)} (after {formatINR(pricePreview.discountAmount)} discount)</>
+              ) : (
+                <> + Margin {formatINR(pricePreview.marginAmount)}</>
+              )}
+              {' '}+ GST {formatINR(pricePreview.gstAmount)}
+              {discountAppliesTo === 'FINAL_AMOUNT' && pricePreview.discountAmount > 0 && (
+                <> − Discount {formatINR(pricePreview.discountAmount)}</>
+              )}
             </p>
             <p className="mt-1 font-display text-2xl text-charcoal">
               = {formatINR(pricePreview.finalPrice)}
             </p>
             <p className="mt-1 text-[11px] text-charcoal-soft">
-              This is a live preview. The actual saved price is calculated the same way on the server, and
-              recalculates automatically whenever a new gold/silver rate is published.
+              This is a live preview of the price customers will see (with the full breakdown table)
+              on the product page. It matches exactly what the server calculates and saves.
             </p>
           </div>
         </FormSection>

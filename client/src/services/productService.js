@@ -10,7 +10,7 @@ export const fetchProducts = async (params = {}) => {
 
 export const fetchProductBySlug = async (slug) => {
   const { data } = await api.get(`/products/slug/${slug}`);
-  return data; // { product, relatedProducts }
+  return data; // { product, relatedProducts, priceBreakdown }
 };
 
 export const fetchProductById = async (id) => {

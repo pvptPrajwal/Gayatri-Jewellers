@@ -53,11 +53,18 @@ const productSchema = new mongoose.Schema(
 
     gstPercent: { type: Number, default: 3, min: 0, max: 100 },
 
+    // Discount: can apply to either the Margin (Making Charges) — reducing
+    // it before GST is calculated — or to the final amount (Rate + Margin +
+    // GST) after everything else is totalled. Stored exactly as entered
+    // (percentage or a flat ₹ amount) — never auto-converted between types.
+    discountAppliesTo: { type: String, enum: ['MARGIN', 'FINAL_AMOUNT'], default: 'FINAL_AMOUNT' },
+    discountType: { type: String, enum: ['PERCENTAGE', 'FLAT'], default: 'PERCENTAGE' },
+    discountValue: { type: Number, default: 0, min: 0 },
+
     // Deprecated: no longer used in price calculation (kept only so old
     // documents/data don't break). New pricing uses rateType/basePrice +
-    // marginType/marginValue + gstPercent above instead.
+    // marginType/marginValue + gstPercent + discountType/discountValue above.
     makingCharges: { type: Number, default: 0, min: 0 },
-    discount: { type: Number, default: 0, min: 0, max: 100 },
 
     finalPrice: { type: Number, min: 0 },
 

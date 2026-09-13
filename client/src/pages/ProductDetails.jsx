@@ -13,6 +13,7 @@ import ProductGrid from '../components/common/ProductGrid';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import EmptyState from '../components/common/EmptyState';
 import ProductReviews from '../components/common/ProductReviews';
+import PriceBreakdownTable from '../components/common/PriceBreakdownTable';
 import Seo from '../components/common/Seo';
 import { optimizedImage } from '../utils/cloudinary';
 
@@ -21,6 +22,7 @@ const ProductDetails = () => {
   const dispatch = useDispatch();
   const [product, setProduct] = useState(null);
   const [related, setRelated] = useState([]);
+  const [priceBreakdown, setPriceBreakdown] = useState(null);
   const [activeImage, setActiveImage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -32,10 +34,11 @@ const ProductDetails = () => {
     setLoading(true);
     setNotFound(false);
     fetchProductBySlug(slug)
-      .then(({ product: p, relatedProducts }) => {
+      .then(({ product: p, relatedProducts, priceBreakdown: breakdown }) => {
         if (!mounted) return;
         setProduct(p);
         setRelated(relatedProducts);
+        setPriceBreakdown(breakdown);
         setActiveImage(0);
         window.scrollTo({ top: 0 });
       })
@@ -238,6 +241,15 @@ const ProductDetails = () => {
           </div>
         </div>
       </div>
+
+      {priceBreakdown && (
+        <div className="mt-10">
+          <h2 className="font-display text-2xl">Price Breakdown</h2>
+          <div className="mt-4">
+            <PriceBreakdownTable product={product} breakdown={priceBreakdown} />
+          </div>
+        </div>
+      )}
 
       <ProductReviews productId={product._id} />
 

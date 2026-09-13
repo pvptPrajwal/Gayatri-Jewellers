@@ -10,7 +10,7 @@ const { computeFinalPrice } = require('../utils/pricing');
 // are left exactly as saved; only finalPrice changes.
 const recalculateRateLinkedProducts = async (goldRate) => {
   const products = await Product.find({ rateType: { $ne: 'NONE' } }).select(
-    'rateType grossWeight basePrice marginType marginValue gstPercent'
+    'rateType grossWeight basePrice marginType marginValue gstPercent discountAppliesTo discountType discountValue'
   );
 
   if (products.length === 0) return 0;

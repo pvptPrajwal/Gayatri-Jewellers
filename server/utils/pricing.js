@@ -6,22 +6,50 @@ const RATE_FIELD_MAP = {
   SILVER: 'silverRate',
 };
 
+const round2 = (n) => Math.round(n * 100) / 100;
+
 /**
- * Final Product Price = Rate + Margin + GST
+ * Final Product Price, computed one of two ways depending on
+ * `discountAppliesTo`:
  *
+ * discountAppliesTo = 'MARGIN' (discount on Making Charges):
+ *   effectiveMargin = Margin − Discount
+ *   Final Price = Rate + effectiveMargin + GST
+ *   (GST is calculated AFTER the discount reduces the margin — the
+ *   discount changes what GST is charged on.)
+ *
+ * discountAppliesTo = 'FINAL_AMOUNT' (discount on final price, default):
+ *   Grand Total = Rate + Margin + GST
+ *   Final Price = Grand Total − Discount
+ *   (GST is calculated on the full Rate + Margin first; the discount is
+ *   taken off the total afterwards and does not affect the GST amount.)
+ *
+ * In both cases:
  * - Rate: if the product is linked to a live gold/silver rate (rateType is
  *   not 'NONE'), Rate = (per-gram rate for that purity) × grossWeight.
  *   Otherwise Rate = the product's manually entered `basePrice`.
- * - Margin: stored exactly as the admin entered it — either a percentage
- *   of Rate, or a flat ₹ amount. Never auto-converted between the two.
- * - GST: a percentage applied on top of (Rate + Margin).
+ * - Margin: stored exactly as the admin entered it — percentage of Rate,
+ *   or a flat ₹ amount. Never auto-converted between the two.
+ * - Discount: stored exactly as entered — percentage (of Margin or of the
+ *   final total, depending on discountAppliesTo), or a flat ₹ amount.
+ *   Never auto-converted between the two.
  *
  * `goldRate` is the current GoldRate document (or null if none exists yet /
  * not needed because rateType is 'NONE') — pass it in rather than querying
  * here so callers can reuse one fetched rate across many products.
  */
 const computeFinalPrice = (product, goldRate) => {
-  const { rateType, grossWeight, basePrice, marginType, marginValue, gstPercent } = product;
+  const {
+    rateType,
+    grossWeight,
+    basePrice,
+    marginType,
+    marginValue,
+    gstPercent,
+    discountType,
+    discountValue,
+    discountAppliesTo,
+  } = product;
 
   let rateAmount;
   if (rateType && rateType !== 'NONE') {
@@ -34,14 +62,43 @@ const computeFinalPrice = (product, goldRate) => {
   const marginAmount =
     marginType === 'FLAT' ? marginValue || 0 : rateAmount * ((marginValue || 0) / 100);
 
+  if (discountAppliesTo === 'MARGIN') {
+    const discountAmount =
+      discountType === 'FLAT' ? discountValue || 0 : marginAmount * ((discountValue || 0) / 100);
+    const effectiveMargin = Math.max(0, marginAmount - discountAmount);
+    const subtotal = rateAmount + effectiveMargin;
+    const gstAmount = subtotal * ((gstPercent || 0) / 100);
+    const finalPrice = subtotal + gstAmount;
+
+    return {
+      rateAmount: round2(rateAmount),
+      marginAmount: round2(marginAmount),
+      discountAmount: round2(discountAmount),
+      effectiveMargin: round2(effectiveMargin),
+      gstAmount: round2(gstAmount),
+      grandTotal: round2(finalPrice), // no separate pre-discount grand total in this mode
+      finalPrice: round2(finalPrice),
+    };
+  }
+
+  // discountAppliesTo === 'FINAL_AMOUNT' (default)
   const subtotal = rateAmount + marginAmount;
   const gstAmount = subtotal * ((gstPercent || 0) / 100);
+  const grandTotal = subtotal + gstAmount; // before discount
+
+  const discountAmount =
+    discountType === 'FLAT' ? discountValue || 0 : grandTotal * ((discountValue || 0) / 100);
+
+  const finalPrice = Math.max(0, grandTotal - discountAmount);
 
   return {
-    rateAmount: Math.round(rateAmount * 100) / 100,
-    marginAmount: Math.round(marginAmount * 100) / 100,
-    gstAmount: Math.round(gstAmount * 100) / 100,
-    finalPrice: Math.round((subtotal + gstAmount) * 100) / 100,
+    rateAmount: round2(rateAmount),
+    marginAmount: round2(marginAmount),
+    effectiveMargin: round2(marginAmount),
+    gstAmount: round2(gstAmount),
+    grandTotal: round2(grandTotal),
+    discountAmount: round2(discountAmount),
+    finalPrice: round2(finalPrice),
   };
 };
 
