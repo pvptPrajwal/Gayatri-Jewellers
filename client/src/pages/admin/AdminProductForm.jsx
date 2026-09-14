@@ -87,7 +87,7 @@ const AdminProductForm = () => {
   const discountAppliesTo = watch('discountAppliesTo');
   const discountType = watch('discountType');
   const discountValue = watch('discountValue');
-  const grossWeight = watch('grossWeight');
+  const netWeight = watch('netWeight');
 
   useEffect(() => {
     Promise.all([
@@ -148,7 +148,7 @@ const AdminProductForm = () => {
     let ratePerGram = null;
     if (rateType && rateType !== 'NONE') {
       ratePerGram = goldRate ? goldRate[RATE_FIELD_MAP[rateType]] : null;
-      rateAmount = (ratePerGram || 0) * (Number(grossWeight) || 0);
+      rateAmount = (ratePerGram || 0) * (Number(netWeight) || 0);
     } else {
       rateAmount = Number(basePrice) || 0;
     }
@@ -172,7 +172,7 @@ const AdminProductForm = () => {
       discountType === 'FLAT' ? Number(discountValue) || 0 : grandTotal * ((Number(discountValue) || 0) / 100);
     const finalPrice = Math.max(0, grandTotal - discountAmount);
     return { ratePerGram, rateAmount, marginAmount, effectiveMargin: marginAmount, gstAmount, grandTotal, discountAmount, finalPrice };
-  }, [rateType, goldRate, grossWeight, basePrice, marginType, marginValue, gstPercent, discountAppliesTo, discountType, discountValue]);
+  }, [rateType, goldRate, netWeight, basePrice, marginType, marginValue, gstPercent, discountAppliesTo, discountType, discountValue]);
 
   const onSubmit = async (formData) => {
     if (!mainImage) {
@@ -321,7 +321,7 @@ const AdminProductForm = () => {
             <div className="sm:col-span-2 border border-sand-dark bg-sand/40 p-3 text-xs text-charcoal-soft">
               {goldRate ? (
                 pricePreview.ratePerGram ? (
-                  <>Current {rateType} rate: <strong>{formatINR(pricePreview.ratePerGram)}/g</strong> × {grossWeight || 0}g gross weight = <strong>{formatINR(pricePreview.rateAmount)}</strong></>
+                  <>Current {rateType} rate: <strong>{formatINR(pricePreview.ratePerGram)}/g</strong> × {netWeight || 0}g net weight = <strong>{formatINR(pricePreview.rateAmount)}</strong></>
                 ) : (
                   <>No {rateType} rate found in the current gold rate entry.</>
                 )

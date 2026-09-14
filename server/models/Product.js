@@ -40,8 +40,9 @@ const productSchema = new mongoose.Schema(
 
     // Pricing: Final Price = Rate + Margin + GST
     // Rate: if rateType is set, Rate = (live per-gram rate for that purity)
-    // × grossWeight, pulled from the current GoldRate whenever the price is
-    // computed. If rateType is 'NONE' (no live rate — e.g. Platinum,
+    // × netWeight (not gross — stones/other materials in gross weight carry
+    // no gold value), pulled from the current GoldRate whenever the price
+    // is computed. If rateType is 'NONE' (no live rate — e.g. Platinum,
     // Diamond-only pieces), Rate = basePrice, entered manually.
     rateType: { type: String, enum: ['24K', '22K', '18K', 'SILVER', 'NONE'], default: 'NONE' },
     basePrice: { type: Number, default: 0, min: 0 }, // manual Rate, used only when rateType is 'NONE'

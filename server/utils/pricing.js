@@ -26,8 +26,10 @@ const round2 = (n) => Math.round(n * 100) / 100;
  *
  * In both cases:
  * - Rate: if the product is linked to a live gold/silver rate (rateType is
- *   not 'NONE'), Rate = (per-gram rate for that purity) × grossWeight.
- *   Otherwise Rate = the product's manually entered `basePrice`.
+ *   not 'NONE'), Rate = (per-gram rate for that purity) × netWeight. Net
+ *   weight (not gross) is used because stones/other materials included in
+ *   gross weight carry no gold value. Otherwise Rate = the product's
+ *   manually entered `basePrice`.
  * - Margin: stored exactly as the admin entered it — percentage of Rate,
  *   or a flat ₹ amount. Never auto-converted between the two.
  * - Discount: stored exactly as entered — percentage (of Margin or of the
@@ -41,7 +43,7 @@ const round2 = (n) => Math.round(n * 100) / 100;
 const computeFinalPrice = (product, goldRate) => {
   const {
     rateType,
-    grossWeight,
+    netWeight,
     basePrice,
     marginType,
     marginValue,
@@ -54,7 +56,7 @@ const computeFinalPrice = (product, goldRate) => {
   let rateAmount;
   if (rateType && rateType !== 'NONE') {
     const perGram = goldRate ? goldRate[RATE_FIELD_MAP[rateType]] || 0 : 0;
-    rateAmount = perGram * (grossWeight || 0);
+    rateAmount = perGram * (netWeight || 0);
   } else {
     rateAmount = basePrice || 0;
   }

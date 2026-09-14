@@ -4,7 +4,7 @@ import { optimizedImage } from '../../utils/cloudinary';
 // breakdown (from computeFinalPrice on the server, or mirrored client-side):
 //   { ratePerGram, rateAmount, marginAmount, effectiveMargin, discountAmount,
 //     gstAmount, grandTotal, finalPrice }
-// product: needs metal, purity, mainImage, grossWeight, marginType, marginValue,
+// product: needs metal, purity, mainImage, netWeight, marginType, marginValue,
 //   gstPercent, discountType, discountValue, discountAppliesTo
 const PriceBreakdownTable = ({ product, breakdown }) => {
   if (!product || !breakdown) return null;
@@ -60,7 +60,7 @@ const PriceBreakdownTable = ({ product, breakdown }) => {
             <td className="px-4 py-4">
               {breakdown.ratePerGram ? `${formatINR(breakdown.ratePerGram)}/g` : '—'}
             </td>
-            <td className="px-4 py-4">{product.grossWeight}g</td>
+            <td className="px-4 py-4">{product.netWeight}g</td>
             <td className="px-4 py-4 text-charcoal-soft">-</td>
             <td className="px-4 py-4 text-right">{formatINR(breakdown.rateAmount)}</td>
           </tr>
@@ -79,7 +79,7 @@ const PriceBreakdownTable = ({ product, breakdown }) => {
           <tr>
             <td className="px-4 py-4 text-charcoal-soft">Sub Total</td>
             <td className="px-4 py-4 text-charcoal-soft">-</td>
-            <td className="px-4 py-4 text-charcoal-soft">{product.grossWeight}g Gross Wt.</td>
+            <td className="px-4 py-4 text-charcoal-soft">{product.netWeight}g Net Wt.</td>
             <td className="px-4 py-4 text-charcoal-soft">-</td>
             <td className="px-4 py-4 text-right">{formatINR(subTotal)}</td>
           </tr>
