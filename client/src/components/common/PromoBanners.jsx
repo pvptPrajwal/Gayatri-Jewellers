@@ -27,11 +27,11 @@ const PromoBanners = () => {
     <>
       <img src={optimizedImage(banner.image?.url, 1600)} alt={banner.title || 'Promotional banner'} className="h-full w-full object-cover" />
       <div className="absolute inset-0 bg-gradient-to-r from-charcoal/70 via-charcoal/20 to-transparent" />
-      <div className="absolute inset-y-0 left-0 flex flex-col items-start justify-center gap-3 p-6 text-ivory sm:p-12">
-        {banner.title && <h2 className="max-w-md font-display text-3xl sm:text-4xl">{banner.title}</h2>}
-        {banner.subtitle && <p className="max-w-md text-sm text-ivory/80">{banner.subtitle}</p>}
+      <div className="absolute inset-y-0 left-0 flex flex-col items-start justify-center gap-2 p-5 text-ivory sm:gap-3 sm:p-8 lg:p-12">
+        {banner.title && <h2 className="max-w-md font-display text-2xl sm:text-3xl lg:text-4xl">{banner.title}</h2>}
+        {banner.subtitle && <p className="max-w-xs text-xs text-ivory/80 sm:max-w-md sm:text-sm">{banner.subtitle}</p>}
         {banner.buttonText && (
-          <span className="btn-gold mt-2 inline-flex">{banner.buttonText}</span>
+          <span className="btn-gold mt-1 inline-flex text-xs sm:mt-2 sm:text-sm">{banner.buttonText}</span>
         )}
       </div>
     </>
@@ -39,7 +39,7 @@ const PromoBanners = () => {
 
   return (
     <section className="container-page py-8">
-      <div className="relative aspect-[16/7] w-full overflow-hidden sm:aspect-[16/5]">
+      <div className="relative aspect-[4/3] w-full overflow-hidden sm:aspect-[16/6] lg:aspect-[16/5]">
         {isExternal(banner.link) ? (
           <a href={banner.link} target="_blank" rel="noopener noreferrer" className="block h-full w-full">
             {content}

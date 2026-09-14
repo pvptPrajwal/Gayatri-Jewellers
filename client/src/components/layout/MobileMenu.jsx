@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { NavLink } from 'react-router-dom';
 import { X } from 'lucide-react';
 
@@ -26,7 +27,14 @@ const MobileMenu = ({ open, onClose }) => {
 
   if (!open) return null;
 
-  return (
+  // Rendered via a portal straight to <body> — this drawer must escape the
+  // sticky <header> it's triggered from. A sticky/positioned ancestor with
+  // a z-index establishes its own stacking context, which can trap a
+  // `fixed` descendant's z-index inside it instead of letting it compete
+  // against the rest of the page (the exact bug that caused page content
+  // to render on top of / bleed through this menu). A portal sidesteps
+  // that entirely by mounting outside the header's DOM subtree.
+  return createPortal(
     <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Site menu">
       <div className="absolute inset-0 bg-charcoal/50" onClick={onClose} />
       <div className="absolute right-0 top-0 h-full w-80 max-w-[85vw] bg-ivory p-6 shadow-xl">
@@ -51,7 +59,8 @@ const MobileMenu = ({ open, onClose }) => {
           ))}
         </nav>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

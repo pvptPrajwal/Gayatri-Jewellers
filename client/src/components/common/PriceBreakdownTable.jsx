@@ -29,8 +29,8 @@ const PriceBreakdownTable = ({ product, breakdown }) => {
   );
 
   return (
-    <div className="overflow-hidden border border-sand-dark">
-      <table className="w-full text-left text-sm">
+    <div className="overflow-x-auto border border-sand-dark">
+      <table className="w-full min-w-[600px] text-left text-sm">
         <thead>
           <tr className="border-b border-sand-dark bg-sand/40 text-[10px] tracking-wide text-charcoal-soft">
             <th className="px-4 py-3 font-normal">PRODUCT DETAILS</th>
